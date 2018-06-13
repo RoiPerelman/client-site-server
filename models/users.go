@@ -1,31 +1,40 @@
 package models
 
 import (
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 	"time"
-	"fmt"
 )
+
+type ExistencReasons struct {
+	Email string
+	Username string
+}
 
 type UserErrors struct {
 	Email    string `json:"email"`
-	Username     string `json:"name"`
+	Username string `json:"username"`
 	Password string `json:"password"`
 	Server   string `json:"server"`
 }
 
 type User struct {
-	Id           int        `json:"id"`
-	Email        string     `json:"email"`
-	Username     string     `json:"username"`
-	Password     string     `json:"password"`
-	PasswordHash string     `json:"passwordHash"`
-	Token        string     `json:"token"`
-	Errors       UserErrors `json:"errors"`
+	Id              int        `json:"-"`
+	Email           string     `json:"email"`
+	Username        string     `json:"username"`
+	Password        string     `json:"-"`
+	PasswordHash    string     `json:"-"`
+	Token           string     `json:"token"`
+	IsAuthenticated bool       `json:"isAuthenticated"`
+	Errors          UserErrors `json:"errors"`
 }
 
-func UserExists(user *User) bool {
-	results, err := db.Query("SELECT email, username FROM users WHERE email='roiperelman@gmail.com'")
+func (user *User) Exists() (bool, ExistencReasons) {
+	var existenceReasons ExistencReasons
+	results, err := db.Query(
+		"SELECT email, username FROM users WHERE email=? AND username=?",
+		user.Email, user.Username)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -42,34 +51,33 @@ func UserExists(user *User) bool {
 		}
 
 		if email == user.Email {
-			user.Errors.Email = "u user with this email exists"
+			existenceReasons.Email = "A User with this email exists"
 			response = true
 		}
 		if userName == user.Username {
-			user.Errors.Username = "a user with this username exists"
+			existenceReasons.Username = "A User with this username exists"
 			response = true
 		}
-		return response
+		return response, existenceReasons
 	}
-	return false
+	return false, existenceReasons
 }
 
-func InsertUser(user *User) {
-
-	if UserExists(user) {
-		return
-	} else {
-		str := fmt.Sprintf(
-			`INSERT INTO users (email,username,passwordHash)
-		VALUES ( '%v', '%v', '%v' )`, user.Email, user.Username, user.PasswordHash)
-		insert, err := db.Query(str)
-
-		if err != nil {
-			panic(err.Error())
-		}
-		defer insert.Close()
-		return
+func (user *User) Insert() bool {
+	if exists, existenceReasons := user.Exists(); exists == true {
+		user.Errors.Email = existenceReasons.Email
+		user.Errors.Username = existenceReasons.Username
+		return false
 	}
+	str := fmt.Sprintf(
+		`INSERT INTO users (email,username,passwordHash)
+			VALUES ( '%v', '%v', '%v' )`, user.Email, user.Username, user.PasswordHash)
+	insert, err := db.Query(str)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer insert.Close()
+	return true
 }
 
 func (user *User) AddToken(secret string) error {
@@ -85,6 +93,7 @@ func (user *User) AddToken(secret string) error {
 	}
 
 	user.Token = tokenString
+	user.IsAuthenticated = true
 	return err
 }
 
