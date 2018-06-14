@@ -7,9 +7,10 @@ import (
 	"time"
 )
 
-type ExistencReasons struct {
-	Email string
-	Username string
+type Reasons struct {
+	Email        string
+	Username     string
+	PasswordHash string
 }
 
 type UserErrors struct {
@@ -23,57 +24,67 @@ type User struct {
 	Id              int        `json:"-"`
 	Email           string     `json:"email"`
 	Username        string     `json:"username"`
-	Password        string     `json:"-"`
+	Password        string     `json:"password"`
 	PasswordHash    string     `json:"-"`
 	Token           string     `json:"token"`
 	IsAuthenticated bool       `json:"isAuthenticated"`
 	Errors          UserErrors `json:"errors"`
 }
 
-func (user *User) Exists() (bool, ExistencReasons) {
-	var existenceReasons ExistencReasons
-	results, err := db.Query(
-		"SELECT email, username FROM users WHERE email=? AND username=?",
-		user.Email, user.Username)
+func GetUserByEmail(email string) *User {
+	results, err := db.Query("SELECT email, username, passwordHash FROM users WHERE email=?", email)
 	if err != nil {
+		fmt.Printf("getUserByEmail err %v\n", err.Error())
 		panic(err.Error())
 	}
 	defer results.Close()
-
 	found := results.Next()
-
 	if found {
-		var response = false
-		var email, userName string
-		err = results.Scan(&email, &userName)
-		if err != nil {
-			panic(err.Error()) // proper error handling instead of panic in your app
-		}
-
-		if email == user.Email {
-			existenceReasons.Email = "A User with this email exists"
-			response = true
-		}
-		if userName == user.Username {
-			existenceReasons.Username = "A User with this username exists"
-			response = true
-		}
-		return response, existenceReasons
+		user := new(User)
+		err = results.Scan(&user.Email, &user.Username, &user.PasswordHash)
+		return user
 	}
-	return false, existenceReasons
+	return nil
+}
+
+func GetUserByUsername(email string) *User {
+	results, err := db.Query("SELECT email, username, passwordHash FROM users WHERE username=?", email)
+	if err != nil {
+		fmt.Printf("getUserByEmail err %v\n", err.Error())
+		panic(err.Error())
+	}
+	defer results.Close()
+	found := results.Next()
+	if found {
+		user := new(User)
+		err = results.Scan(&user.Email, &user.Username, &user.PasswordHash)
+		return user
+	}
+	return nil
 }
 
 func (user *User) Insert() bool {
-	if exists, existenceReasons := user.Exists(); exists == true {
-		user.Errors.Email = existenceReasons.Email
-		user.Errors.Username = existenceReasons.Username
+	emailUser := GetUserByEmail(user.Email)
+	nameUser := GetUserByUsername(user.Username)
+
+	// if user already exists - add errors indication for client
+	if emailUser != nil || nameUser != nil {
+		if nameUser != nil {
+			user.Errors.Username = "A User with this username exists"
+		}
+		if emailUser != nil {
+			user.Errors.Email = "A User with this email exists"
+		}
 		return false
 	}
+
+	// create user in database
 	str := fmt.Sprintf(
 		`INSERT INTO users (email,username,passwordHash)
 			VALUES ( '%v', '%v', '%v' )`, user.Email, user.Username, user.PasswordHash)
 	insert, err := db.Query(str)
 	if err != nil {
+		fmt.Printf("insert err %v\n", err.Error())
 		panic(err.Error())
 	}
 	defer insert.Close()
