@@ -25,6 +25,7 @@ type User struct {
 	Email           string     `json:"email"`
 	Username        string     `json:"username"`
 	Password        string     `json:"password"`
+	SectionId       string     `json:"sectionId"`
 	PasswordHash    string     `json:"-"`
 	Token           string     `json:"token"`
 	IsAuthenticated bool       `json:"isAuthenticated"`
@@ -32,7 +33,7 @@ type User struct {
 }
 
 func GetUserByEmail(email string) *User {
-	results, err := db.Query("SELECT email, username, passwordHash FROM users WHERE email=?", email)
+	results, err := db.Query("SELECT email, username, passwordHash, sectionId FROM users WHERE email=?", email)
 	if err != nil {
 		fmt.Printf("getUserByEmail err %v\n", err.Error())
 		panic(err.Error())
@@ -41,14 +42,14 @@ func GetUserByEmail(email string) *User {
 	found := results.Next()
 	if found {
 		user := new(User)
-		err = results.Scan(&user.Email, &user.Username, &user.PasswordHash)
+		err = results.Scan(&user.Email, &user.Username, &user.PasswordHash, &user.SectionId)
 		return user
 	}
 	return nil
 }
 
 func GetUserByUsername(email string) *User {
-	results, err := db.Query("SELECT email, username, passwordHash FROM users WHERE username=?", email)
+	results, err := db.Query("SELECT email, username, passwordHash, sectionId FROM users WHERE username=?", email)
 	if err != nil {
 		fmt.Printf("getUserByEmail err %v\n", err.Error())
 		panic(err.Error())
@@ -57,7 +58,7 @@ func GetUserByUsername(email string) *User {
 	found := results.Next()
 	if found {
 		user := new(User)
-		err = results.Scan(&user.Email, &user.Username, &user.PasswordHash)
+		err = results.Scan(&user.Email, &user.Username, &user.PasswordHash, &user.SectionId)
 		return user
 	}
 	return nil
@@ -80,8 +81,8 @@ func (user *User) Insert() bool {
 
 	// create user in database
 	str := fmt.Sprintf(
-		`INSERT INTO users (email,username,passwordHash)
-			VALUES ( '%v', '%v', '%v' )`, user.Email, user.Username, user.PasswordHash)
+		`INSERT INTO users (email,username,passwordHash,SectionId)
+			VALUES ( '%v', '%v', '%v', '%v' )`, user.Email, user.Username, user.PasswordHash, user.SectionId)
 	insert, err := db.Query(str)
 	if err != nil {
 		fmt.Printf("insert err %v\n", err.Error())
