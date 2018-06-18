@@ -4,3 +4,7 @@
 # editor
 .idea
 .vscode
+
+#client-site stuff
+client-site/build
+client-site/node_modules
