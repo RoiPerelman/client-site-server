@@ -1,1 +1,1 @@
-web: client-site-server
+web: client-site-server -static=/app/build
