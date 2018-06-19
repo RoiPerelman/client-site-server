@@ -33,7 +33,7 @@ type User struct {
 }
 
 func GetUserByEmail(email string) *User {
-	results, err := db.Query("SELECT email, username, passwordHash, sectionId FROM users WHERE email=?", email)
+	results, err := db.Query("SELECT email, username, passwordHash, sectionId FROM users WHERE email=$1", email)
 	if err != nil {
 		fmt.Printf("getUserByEmail err %v\n", err.Error())
 		panic(err.Error())
@@ -49,7 +49,7 @@ func GetUserByEmail(email string) *User {
 }
 
 func GetUserByUsername(email string) *User {
-	results, err := db.Query("SELECT email, username, passwordHash, sectionId FROM users WHERE username=?", email)
+	results, err := db.Query("SELECT email, username, passwordHash, sectionId FROM users WHERE username=$1", email)
 	if err != nil {
 		fmt.Printf("getUserByEmail err %v\n", err.Error())
 		panic(err.Error())
