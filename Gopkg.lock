@@ -8,12 +8,6 @@
   version = "v3.2.0"
 
 [[projects]]
-  name = "github.com/go-sql-driver/mysql"
-  packages = ["."]
-  revision = "d523deb1b23d913de5bdada721a6071e71283618"
-  version = "v1.4.0"
-
-[[projects]]
   name = "github.com/gorilla/context"
   packages = ["."]
   revision = "08b5f424b9271eedf6f9f0ce86cb9396ed337a42"
@@ -27,6 +21,15 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/lib/pq"
+  packages = [
+    ".",
+    "oid"
+  ]
+  revision = "90697d60dd844d5ef6ff15135d0203f65d2f53b8"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/crypto"
   packages = [
     "bcrypt",
@@ -34,15 +37,9 @@
   ]
   revision = "027cca12c2d63e3d62b670d901e8a2c95854feec"
 
-[[projects]]
-  name = "google.golang.org/appengine"
-  packages = ["cloudsql"]
-  revision = "b1f26356af11148e710935ed1ac8a7f5702c7612"
-  version = "v1.1.0"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "14b77bb4ae745c9c97edbeade1d30c25040bb20aa1ff0f9716a994a95f7f0b0c"
+  inputs-digest = "751e7b6f9f6d000d6af13d3a66548f6562120bfd9aab9a665ded5f9ee3e1de9e"
   solver-name = "gps-cdcl"
   solver-version = 1
