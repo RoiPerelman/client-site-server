@@ -5,11 +5,10 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/roiperelman/client-site-server/models"
 	"github.com/roiperelman/client-site-server/handlers"
+	"github.com/roiperelman/client-site-server/utils"
 	"flag"
 	"fmt"
-	"os"
 )
-
 
 func main() {
 
@@ -19,7 +18,7 @@ func main() {
 	flag.Parse()
 
 	fmt.Println("the staticLocation is " + staticLocation)
-	fmt.Println("The port is " + getEnv("PORT", port))
+	fmt.Println("The port is " + utils.GetEnv("PORT", port))
 
 	models.InitDB()
 	r := mux.NewRouter()
@@ -30,7 +29,7 @@ func main() {
 	r.PathPrefix("/static").Handler(http.FileServer(http.Dir(staticLocation)))
 	r.PathPrefix("/").HandlerFunc(staticFileHandler(staticLocation + "/index.html"))
 
-	http.ListenAndServe(":" + getEnv("PORT", port), r)
+	http.ListenAndServe(":" + utils.GetEnv("PORT", port), r)
 }
 
 func staticFileHandler(filePath string) func(w http.ResponseWriter, r *http.Request) {
@@ -40,9 +39,3 @@ func staticFileHandler(filePath string) func(w http.ResponseWriter, r *http.Requ
 	return http.HandlerFunc(fn)
 }
 
-func getEnv(key, fallback string) string {
-	if value, ok := os.LookupEnv(key); ok {
-		return value
-	}
-	return fallback
-}
