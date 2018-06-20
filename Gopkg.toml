@@ -30,12 +30,12 @@
   version = "3.2.0"
 
 [[constraint]]
-  name = "github.com/go-sql-driver/mysql"
-  version = "1.4.0"
-
-[[constraint]]
   name = "github.com/gorilla/mux"
   version = "1.6.2"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/lib/pq"
 
 [[constraint]]
   branch = "master"
@@ -44,8 +44,3 @@
 [prune]
   go-tests = true
   unused-packages = true
-
-[metadata.heroku]
-  root-package = "github.com/roiperelman/client-site-server"
-  go-version = "go1.10.3"
-  ensure = "false"

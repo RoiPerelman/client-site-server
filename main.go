@@ -14,14 +14,14 @@ func main() {
 
 	var port, staticLocation string
 	flag.StringVar(&port ,"port", "1111", "The Port the App Will Listen To")
-	flag.StringVar(&staticLocation,"static", "./build", "The Location the App statically serves from")
+	flag.StringVar(&staticLocation,"static", "./client-site/build", "The Location the App statically serves from")
 	flag.Parse()
-
-	fmt.Println("the staticLocation is " + staticLocation)
-	fmt.Println("The port is " + utils.GetEnv("PORT", port))
 
 	models.InitDB()
 	r := mux.NewRouter()
+
+	fmt.Println("The port is " + utils.GetEnv("PORT", port))
+	fmt.Println("the staticLocation is " + staticLocation)
 
 	r.HandleFunc("/api/user/authorize", handlers.AuthorizeUser).Methods("GET")
 	r.HandleFunc("/api/user/signup", handlers.SignupUser).Methods("POST")
