@@ -21,7 +21,7 @@
     "validator": "^10.3.0"
   },
   "scripts": {
-    "precommit": "lint-staged",
+    "precommit": "npm run build && lint-staged",
     "analyze": "source-map-explorer build/static/js/main.*",
     "start": "react-scripts start",
     "build": "react-scripts build",
