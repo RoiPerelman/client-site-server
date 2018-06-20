@@ -46,4 +46,4 @@
   unused-packages = true
 
 [metadata.heroku]
-  root-package = "github.com/heroku/go-getting-started"
+  root-package = "github.com/RoiPerelman/client-site-server"
