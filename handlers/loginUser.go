@@ -18,7 +18,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	enc := json.NewEncoder(w)
 	err := dec.Decode(&user)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

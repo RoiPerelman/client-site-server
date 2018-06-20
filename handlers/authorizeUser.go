@@ -52,7 +52,7 @@ func AuthorizeUser(	w http.ResponseWriter, r *http.Request) {
 	// Marshal the struct to []byte format
 	output, err := json.Marshal(user)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	// Write the output

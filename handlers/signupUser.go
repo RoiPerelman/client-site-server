@@ -15,13 +15,13 @@ func SignupUser(w http.ResponseWriter, r *http.Request) {
 	// Read body to []byte
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	// Unmarshal []byte to a struct
 	err = json.Unmarshal(body, &user)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -30,13 +30,14 @@ func SignupUser(w http.ResponseWriter, r *http.Request) {
 	if success := user.Insert(); success == true {
 		user.AddToken(secret)
 	} else {
-		w.WriteHeader(http.StatusConflict)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	// Marshal the struct to []byte format
 	output, err := json.Marshal(user)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	// Write the output
