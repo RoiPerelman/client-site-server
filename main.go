@@ -7,7 +7,7 @@ import (
 	"github.com/roiperelman/client-site-server/handlers"
 	"github.com/roiperelman/client-site-server/utils"
 	"flag"
-	"fmt"
+	"log"
 )
 
 func main() {
@@ -20,8 +20,8 @@ func main() {
 	models.InitDB()
 	r := mux.NewRouter()
 
-	fmt.Println("The port is " + utils.GetEnv("PORT", port))
-	fmt.Println("the staticLocation is " + staticLocation)
+	log.Println("The port is " + utils.GetEnv("PORT", port))
+	log.Println("the staticLocation is " + staticLocation)
 
 	r.HandleFunc("/api/user/authorize", handlers.AuthorizeUser).Methods("GET")
 	r.HandleFunc("/api/user/signup", handlers.SignupUser).Methods("POST")

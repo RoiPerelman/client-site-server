@@ -44,4 +44,3 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	enc.Encode(user)
 }
-
