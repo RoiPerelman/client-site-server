@@ -19,7 +19,7 @@ func InitDB() {
 		utils.GetEnv("MYSQL_PASSWORD", "root"),
 		utils.GetEnv("MYSQL_HOST", "localhost"),
 		utils.GetEnv("MYSQL_PORT", "3306"),
-		utils.GetEnv("MYSQL_DATABASE", "dyrp_dev"))
+		utils.GetEnv("MYSQL_DATABASE", "dypd_dev"))
 
 	db, err = sql.Open("mysql", address)
 
