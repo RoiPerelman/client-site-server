@@ -6,6 +6,7 @@ import (
 	"github.com/roiperelman/client-site-server/models"
 	"github.com/roiperelman/client-site-server/handlers"
 	"github.com/roiperelman/client-site-server/utils"
+	"github.com/joho/godotenv"
 	"flag"
 	"log"
 )
@@ -16,6 +17,11 @@ func main() {
 	flag.StringVar(&port ,"port", "1111", "The Port the App Will Listen To")
 	flag.StringVar(&staticLocation,"static", "./client-site/build", "The Location the App statically serves from")
 	flag.Parse()
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Print("Error loading .env file")
+	}
 
 	models.InitDB()
 	r := mux.NewRouter()

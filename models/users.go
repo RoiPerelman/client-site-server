@@ -34,7 +34,8 @@ type User struct {
 }
 
 func GetUserByEmail(email string) *User {
-	results, err := db.Query("SELECT email, username, passwordHash, sectionId FROM users WHERE email=$1", email)
+	query := fmt.Sprintf("SELECT email, username, passwordHash, defaultSection FROM users WHERE email='%v'", email)
+	results, err := db.Query(query)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -48,8 +49,9 @@ func GetUserByEmail(email string) *User {
 	return nil
 }
 
-func GetUserByUsername(email string) *User {
-	results, err := db.Query("SELECT email, username, passwordHash, sectionId FROM users WHERE username=$1", email)
+func GetUserByUsername(username string) *User {
+	query := fmt.Sprintf("SELECT email, username, passwordHash, defaultSection FROM users WHERE username='%v'", username)
+	results, err := db.Query(query)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -80,8 +82,8 @@ func (user *User) Insert() bool {
 
 	// create user in database
 	str := fmt.Sprintf(
-		`INSERT INTO users (email,username,passwordHash,SectionId)
-			VALUES ( '%v', '%v', '%v', '%v' )`, user.Email, user.Username, user.PasswordHash, user.SectionId)
+		`INSERT INTO users (email, username, passwordHash, defaultSection)
+			VALUES ('%v', '%v', '%v', '%v')`, user.Email, user.Username, user.PasswordHash, user.SectionId)
 	insert, err := db.Query(str)
 	if err != nil {
 		fmt.Printf("insert err %v\n", err.Error())

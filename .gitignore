@@ -7,3 +7,6 @@
 
 #client-site stuff
 client-site/node_modules
+
+#env files
+.env
