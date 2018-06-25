@@ -10,6 +10,10 @@ export function* rootSaga() {
   yield takeEvery('FETCH_USER_REQUEST', fetchCurrentUserRequestSaga);
   yield takeEvery('SIGNUP_USER_REQUEST', signupUserRequestSaga);
   yield takeEvery('LOGIN_USER_REQUEST', loginUserRequestSaga);
+  yield takeEvery(
+    'SET_MULTIPLE_SECTION_USER_REQUEST',
+    setMultipleSectionUserSaga
+  );
 }
 
 export function* signupUserRequestSaga(action) {
@@ -50,5 +54,20 @@ export function* loginUserRequestSaga(action) {
     window.location.reload();
   } catch (err) {
     yield put(actions.loginUserFailedAction(err.response.data.errors));
+  }
+}
+
+export function* setMultipleSectionUserSaga(action) {
+  try {
+    // const isMulti = yield call(api.setMultipleSections, action.isMulti);
+    const isMulti = action.isMulti;
+    yield put(actions.setIsMultipleSectionsUserSuccessAction(isMulti));
+  } catch (err) {
+    console.log(err.response.data.errors || 'failed');
+    yield put(
+      actions.setIsMultipleSectionsUserFailedAction(
+        err.response.data.errors || 'failed'
+      )
+    );
   }
 }

@@ -32,6 +32,7 @@ func main() {
 	r.HandleFunc("/api/user/authorize", handlers.AuthorizeUser).Methods("GET")
 	r.HandleFunc("/api/user/signup", handlers.SignupUser).Methods("POST")
 	r.HandleFunc("/api/user/login", handlers.LoginUser).Methods("POST")
+	r.HandleFunc("/api/user/multipleSections", handlers.MultipleSectionsUser).Methods("POST")
 	r.PathPrefix("/static").Handler(http.FileServer(http.Dir(staticLocation)))
 	r.PathPrefix("/").HandlerFunc(staticFileHandler(staticLocation + "/index.html"))
 

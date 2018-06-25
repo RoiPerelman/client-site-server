@@ -9,11 +9,13 @@ const initialUserState = {
   isLoaded: false,
   sectionId: '',
   token: '',
+  isMulti: true,
   errors: {
     email: '',
     username: '',
     password: '',
-    server: ''
+    server: '',
+    isMulti: ''
   }
 };
 
@@ -38,6 +40,16 @@ export const userReducer = (state = initialUserState, action = {}) => {
       history.push('/');
       window.location.reload();
       return state;
+    case types.SET_MULTIPLE_SECTION_USER_SUCCESS:
+      return {
+        ...state,
+        isMulti: action.isMulti
+      };
+    case types.SET_MULTIPLE_SECTION_USER_FAILURE:
+      return {
+        ...state,
+        errors: action.errors
+      };
     default:
       return state;
   }

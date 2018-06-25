@@ -41,3 +41,18 @@ export const loginUserFailedAction = errors => ({
 export const logoutUserAction = () => ({
   type: types.LOGOUT_USER
 });
+
+export const setIsMultipleSectionsUserRequestAction = isMulti => ({
+  type: types.SET_MULTIPLE_SECTION_USER_REQUEST,
+  isMulti
+});
+
+export const setIsMultipleSectionsUserSuccessAction = isMulti => ({
+  type: types.SET_MULTIPLE_SECTION_USER_SUCCESS,
+  isMulti
+});
+
+export const setIsMultipleSectionsUserFailedAction = errors => ({
+  type: types.SET_MULTIPLE_SECTION_USER_FAILURE,
+  errors
+});

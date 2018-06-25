@@ -40,6 +40,7 @@ func AuthorizeUser(	w http.ResponseWriter, r *http.Request) {
 			if emailUser != nil && emailUser.Username == user.Username {
 				user.IsAuthenticated = true
 				user.SectionId = emailUser.SectionId
+				user.Sections = emailUser.Sections
 			} else {
 				w.WriteHeader(http.StatusUnauthorized)
 			}

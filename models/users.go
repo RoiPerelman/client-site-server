@@ -31,21 +31,45 @@ type User struct {
 	Token           string     `json:"token"`
 	IsAuthenticated bool       `json:"isAuthenticated"`
 	Errors          UserErrors `json:"errors"`
+	Sections		[]string	`json:"sections"`
 }
 
 func GetUserByEmail(email string) *User {
-	query := fmt.Sprintf("SELECT email, username, passwordHash, defaultSection FROM users WHERE email='%v'", email)
-	results, err := db.Query(query)
+	// get User info
+	query := fmt.Sprintf("SELECT id, email, username, passwordHash, defaultSection FROM users WHERE email='%v'", email)
+	userResults, err := db.Query(query)
 	if err != nil {
 		log.Panic(err)
 	}
-	defer results.Close()
-	found := results.Next()
+	defer userResults.Close()
+	found := userResults.Next()
 	if found {
 		user := new(User)
-		err = results.Scan(&user.Email, &user.Username, &user.PasswordHash, &user.SectionId)
+		err = userResults.Scan(&user.Id, &user.Email, &user.Username, &user.PasswordHash, &user.SectionId)
+		if err != nil {
+			log.Panic(err)
+		}
+
+		// get Sections info
+		query := fmt.Sprintf("Select section FROM sections WHERE sections.userId=%v", user.Id)
+		sectionResults, err := db.Query(query)
+		if err != nil {
+			log.Panic(err)
+		}
+		defer sectionResults.Close()
+
+		for sectionResults.Next() {
+			var section string
+			err := sectionResults.Scan(&section)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			user.Sections = append(user.Sections, section)
+		}
 		return user
 	}
+
 	return nil
 }
 
@@ -81,10 +105,10 @@ func (user *User) Insert() bool {
 	}
 
 	// create user in database
-	str := fmt.Sprintf(
+	query := fmt.Sprintf(
 		`INSERT INTO users (email, username, passwordHash, defaultSection)
 			VALUES ('%v', '%v', '%v', '%v')`, user.Email, user.Username, user.PasswordHash, user.SectionId)
-	insert, err := db.Query(str)
+	insert, err := db.Query(query)
 	if err != nil {
 		fmt.Printf("insert err %v\n", err.Error())
 		panic(err.Error())

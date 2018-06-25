@@ -1,37 +1,60 @@
 import React from 'react';
-import { Nav, NavItem, NavLink } from 'reactstrap';
+import { Collapse, Card, CardBody } from 'reactstrap';
+import { setIsMultipleSectionsUserRequestAction } from '../../store/user/actions';
+import { connect } from 'react-redux';
 
-const SettingsPage = () => {
-  return (
-    <div>
-      <p>List Based</p>
-      <Nav vertical>
-        <NavItem>
-          <NavLink href="#">Link</NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink href="#">Link</NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink href="#">Another Link</NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink disabled href="#">
-            Disabled Link
-          </NavLink>
-        </NavItem>
-      </Nav>
-      <hr />
-      <p>Link based</p>
-      <Nav vertical>
-        <NavLink href="#">Link</NavLink> <NavLink href="#">Link</NavLink>{' '}
-        <NavLink href="#">Another Link</NavLink>{' '}
-        <NavLink disabled href="#">
-          Disabled Link
-        </NavLink>
-      </Nav>
-    </div>
-  );
-};
+class SettingsPage extends React.Component {
+  constructor(props) {
+    super(props);
+    this.toggle = this.toggle.bind(this);
+    this.state = {
+      collapse: false,
+      errors: ''
+    };
+  }
 
-export default SettingsPage;
+  componentDidMount() {
+    const { isMulti } = this.props;
+    this.setState({ collapse: isMulti });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { isMulti } = nextProps;
+    this.setState({ collapse: isMulti });
+  }
+
+  toggle() {
+    this.props.setIsMultipleSectionsUserRequest(!this.state.collapse);
+  }
+
+  render() {
+    const { collapse, errors } = this.state;
+
+    return (
+      <div>
+        <label className="switch">
+          {errors && <div className="alert alert-danger">{errors}</div>}
+          <input type="checkbox" checked={collapse} onClick={this.toggle} />
+          <span className="slider round"> use multiple sections</span>
+          <Collapse isOpen={collapse}>
+            <Card>
+              <CardBody>Using Multiple Sections</CardBody>
+            </Card>
+          </Collapse>
+        </label>
+      </div>
+    );
+  }
+}
+
+function mapStateToProps(state) {
+  return {
+    isMulti: state.user.isMulti,
+    errors: state.user.errors.isMulti
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  { setIsMultipleSectionsUserRequest: setIsMultipleSectionsUserRequestAction }
+)(SettingsPage);

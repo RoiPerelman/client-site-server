@@ -40,7 +40,7 @@ class Example extends React.Component {
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
               <NavItem>
-                <NavLink href="https://github.com/RoiPerelman/client-site">
+                <NavLink href="https://github.com/RoiPerelman/client-site-server">
                   GitHub
                 </NavLink>
               </NavItem>
