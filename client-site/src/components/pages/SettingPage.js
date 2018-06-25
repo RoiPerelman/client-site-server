@@ -7,36 +7,24 @@ class SettingsPage extends React.Component {
   constructor(props) {
     super(props);
     this.toggle = this.toggle.bind(this);
-    this.state = {
-      collapse: false,
-      errors: ''
-    };
-  }
-
-  componentDidMount() {
-    const { isMulti } = this.props;
-    this.setState({ collapse: isMulti });
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const { isMulti } = nextProps;
-    this.setState({ collapse: isMulti });
   }
 
   toggle() {
-    this.props.setIsMultipleSectionsUserRequest(!this.state.collapse);
+    this.props.setIsMultipleSectionsUserRequest(!this.props.user.isMulti);
   }
 
   render() {
-    const { collapse, errors } = this.state;
+    const { isMulti, errors } = this.props.user;
 
     return (
       <div>
         <label className="switch">
-          {errors && <div className="alert alert-danger">{errors}</div>}
-          <input type="checkbox" checked={collapse} onClick={this.toggle} />
+          {errors.isMulti && (
+            <div className="alert alert-danger">{errors.isMulti}</div>
+          )}
+          <input type="checkbox" checked={isMulti} onChange={this.toggle} />
           <span className="slider round"> use multiple sections</span>
-          <Collapse isOpen={collapse}>
+          <Collapse isOpen={isMulti}>
             <Card>
               <CardBody>Using Multiple Sections</CardBody>
             </Card>
@@ -49,8 +37,7 @@ class SettingsPage extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    isMulti: state.user.isMulti,
-    errors: state.user.errors.isMulti
+    user: state.user
   };
 }
 

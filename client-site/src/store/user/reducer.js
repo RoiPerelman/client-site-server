@@ -6,16 +6,19 @@ const initialUserState = {
   username: '',
   password: '',
   isAuthenticated: false,
-  isLoaded: false,
+  isLoaded: false, // after we load all user information from the server
+  isDYLoaded: false,
+  defaultSection: '',
   sectionId: '',
   token: '',
-  isMulti: true,
+  isMulti: false,
+  sections: [],
   errors: {
     email: '',
     username: '',
     password: '',
     server: '',
-    isMulti: ''
+    multipleSections: ''
   }
 };
 

@@ -33,9 +33,12 @@ export function* fetchCurrentUserRequestSaga() {
     if (localStorage.RPJWT) {
       setAuthorizationHeader(localStorage.RPJWT);
       const user = yield call(api.authorize);
-      yield loadDynamicYield(user.sectionId).catch(e => {
-        console.log(e.stack);
-      });
+      if (!user.isMulti) {
+        yield loadDynamicYield(user.defaultSection).catch(e => {
+          console.log(e.stack);
+        });
+        user.isDYLoaded = true;
+      }
       yield put(actions.fetchCurrentUserSuccessAction(user));
     } else {
       yield put(actions.fetchCurrentUserFailedAction(false));

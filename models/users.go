@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
-	"time"
 	"log"
+	"time"
 )
 
 type Reasons struct {
@@ -15,10 +15,11 @@ type Reasons struct {
 }
 
 type UserErrors struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Server   string `json:"server"`
+	Email            string `json:"email"`
+	Username         string `json:"username"`
+	Password         string `json:"password"`
+	Server           string `json:"server"`
+	MultipleSections string `json:"multipleSections"`
 }
 
 type User struct {
@@ -26,17 +27,18 @@ type User struct {
 	Email           string     `json:"email"`
 	Username        string     `json:"username"`
 	Password        string     `json:"password"`
-	SectionId       string     `json:"sectionId"`
+	DefaultSection  string     `json:"defaultSection"`
 	PasswordHash    string     `json:"-"`
 	Token           string     `json:"token"`
 	IsAuthenticated bool       `json:"isAuthenticated"`
 	Errors          UserErrors `json:"errors"`
-	Sections		[]string	`json:"sections"`
+	Sections        []string   `json:"sections"`
+	IsMulti         bool       `json:"isMulti"`
 }
 
 func GetUserByEmail(email string) *User {
 	// get User info
-	query := fmt.Sprintf("SELECT id, email, username, passwordHash, defaultSection FROM users WHERE email='%v'", email)
+	query := fmt.Sprintf("SELECT id, email, username, passwordHash, DefaultSection, useMultipleSections FROM users WHERE email='%v'", email)
 	userResults, err := db.Query(query)
 	if err != nil {
 		log.Panic(err)
@@ -45,7 +47,7 @@ func GetUserByEmail(email string) *User {
 	found := userResults.Next()
 	if found {
 		user := new(User)
-		err = userResults.Scan(&user.Id, &user.Email, &user.Username, &user.PasswordHash, &user.SectionId)
+		err = userResults.Scan(&user.Id, &user.Email, &user.Username, &user.PasswordHash, &user.DefaultSection, &user.IsMulti)
 		if err != nil {
 			log.Panic(err)
 		}
@@ -74,7 +76,7 @@ func GetUserByEmail(email string) *User {
 }
 
 func GetUserByUsername(username string) *User {
-	query := fmt.Sprintf("SELECT email, username, passwordHash, defaultSection FROM users WHERE username='%v'", username)
+	query := fmt.Sprintf("SELECT email, username, passwordHash, DefaultSection FROM users WHERE username='%v'", username)
 	results, err := db.Query(query)
 	if err != nil {
 		log.Panic(err)
@@ -83,7 +85,7 @@ func GetUserByUsername(username string) *User {
 	found := results.Next()
 	if found {
 		user := new(User)
-		err = results.Scan(&user.Email, &user.Username, &user.PasswordHash, &user.SectionId)
+		err = results.Scan(&user.Email, &user.Username, &user.PasswordHash, &user.DefaultSection)
 		return user
 	}
 	return nil
@@ -106,8 +108,8 @@ func (user *User) Insert() bool {
 
 	// create user in database
 	query := fmt.Sprintf(
-		`INSERT INTO users (email, username, passwordHash, defaultSection)
-			VALUES ('%v', '%v', '%v', '%v')`, user.Email, user.Username, user.PasswordHash, user.SectionId)
+		`INSERT INTO users (email, username, passwordHash, DefaultSection)
+			VALUES ('%v', '%v', '%v', '%v')`, user.Email, user.Username, user.PasswordHash, user.DefaultSection)
 	insert, err := db.Query(query)
 	if err != nil {
 		fmt.Printf("insert err %v\n", err.Error())

@@ -11,7 +11,7 @@ class SignupForm extends React.Component {
       email: '',
       username: '',
       password: '',
-      sectionId: ''
+      defaultSection: ''
     },
     errors: {
       email: '',
@@ -89,18 +89,18 @@ class SignupForm extends React.Component {
         </div>
 
         <div className="form-group">
-          <label htmlFor="sectionId">sectionId</label>
+          <label htmlFor="defaultSection">defaultSection</label>
           <input
             type="text"
-            id="sectionId"
-            name="sectionId"
-            value={data.sectionId}
+            id="defaultSection"
+            name="defaultSection"
+            value={data.defaultSection}
             onChange={this.onChange}
             className={
-              errors.sectionId ? 'form-control is-invalid' : 'form-control'
+              errors.defaultSection ? 'form-control is-invalid' : 'form-control'
             }
           />
-          <div className="invalid-feedback">{errors.sectionId}</div>
+          <div className="invalid-feedback">{errors.defaultSection}</div>
         </div>
 
         <div className="form-group">

@@ -19,17 +19,21 @@ const loadScript = url => {
   });
 };
 
-const loadDynamicYield = async sectionId => {
+const loadDynamicYield = async defaultSection => {
   window.DY = window.DY || {
-    scsec: sectionId,
+    scsec: defaultSection,
     API: (...args) => {
       (window.DY.API.actions = window.DY.API.actions || []).push(args);
     }
   };
   // window.DY.recommendationContext = {"type":"PRODUCT","data":["1217282-400"]};
   window.DY.recommendationContext = { type: 'HOMEPAGE', data: [] };
-  await loadScript(`//cdn.dynamicyield.com/api/${sectionId}/api_dynamic.js`);
-  await loadScript(`//cdn.dynamicyield.com/api/${sectionId}/api_static.js`);
+  await loadScript(
+    `//cdn.dynamicyield.com/api/${defaultSection}/api_dynamic.js`
+  );
+  await loadScript(
+    `//cdn.dynamicyield.com/api/${defaultSection}/api_static.js`
+  );
 };
 
 export default loadDynamicYield;

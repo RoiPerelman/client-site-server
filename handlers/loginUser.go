@@ -31,7 +31,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusUnauthorized)
 		} else {
 			user.Username = dbUser.Username
-			user.SectionId = dbUser.SectionId
+			user.DefaultSection = dbUser.DefaultSection
 			user.AddToken(secret)
 			user.IsAuthenticated = true
 		}
