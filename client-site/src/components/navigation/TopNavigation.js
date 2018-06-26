@@ -31,11 +31,11 @@ class Example extends React.Component {
     });
   }
   render() {
-    const { username, logout } = this.props;
+    const { username, logout, activeSection } = this.props;
     return (
       <div>
         <Navbar color="dark" dark expand="md" fixed="top">
-          <NavbarBrand href="/">DynamicYield RP</NavbarBrand>
+          <NavbarBrand href="/">DynamicYield RP {activeSection}</NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
@@ -68,7 +68,8 @@ class Example extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    username: state.user.username
+    username: state.user.username,
+    activeSection: state.user.activeSection
   };
 }
 

@@ -10,6 +10,7 @@ const initialUserState = {
   isDYLoaded: false,
   isDYLoading: false,
   defaultSection: '',
+  activeSection: '',
   sectionId: '',
   token: '',
   isMulti: false,
@@ -19,7 +20,8 @@ const initialUserState = {
     username: '',
     password: '',
     server: '',
-    multipleSections: '',
+    isMultipleSection: '',
+    addSection: '',
     DYRequest: ''
   }
 };
@@ -45,12 +47,19 @@ export const userReducer = (state = initialUserState, action = {}) => {
     case types.SET_MULTIPLE_SECTION_USER_SUCCESS:
       return {
         ...state,
-        isMulti: action.isMulti
+        isMulti: action.isMulti,
+        errors: {
+          ...state.errors,
+          isMultipleSection: ''
+        }
       };
     case types.SET_MULTIPLE_SECTION_USER_FAILURE:
       return {
         ...state,
-        errors: action.errors
+        errors: {
+          ...state.errors,
+          isMultipleSection: action.error
+        }
       };
     case types.LOAD_DYNAMIC_YIELD_REQUEST_ACTION:
       return {
@@ -71,6 +80,45 @@ export const userReducer = (state = initialUserState, action = {}) => {
           DYRequest: action.error
         },
         isDYLoading: false
+      };
+    case types.UPDATE_ACTIVE_SECTION:
+      return {
+        ...state,
+        activeSection: action.section
+      };
+    case types.ADD_USER_SECTION_SUCCESS:
+      return {
+        ...state,
+        sections: [...state.sections, action.section],
+        errors: {
+          ...state.errors,
+          addSection: ''
+        }
+      };
+    case types.ADD_USER_SECTION_FAILURE:
+      return {
+        ...state,
+        errors: {
+          ...state.errors,
+          addSection: action.error
+        }
+      };
+    case types.DEL_USER_SECTION_SUCCESS:
+      return {
+        ...state,
+        sections: state.sections.filter(section => section !== action.section),
+        errors: {
+          ...state.errors,
+          addSection: ''
+        }
+      };
+    case types.DEL_USER_SECTION_FAILURE:
+      return {
+        ...state,
+        errors: {
+          ...state.errors,
+          addSection: action.error
+        }
       };
     default:
       return state;

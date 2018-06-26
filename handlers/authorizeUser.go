@@ -39,6 +39,7 @@ func AuthorizeUser(	w http.ResponseWriter, r *http.Request) {
 			emailUser := models.GetUserByEmail(user.Email)
 			if emailUser != nil && emailUser.Username == user.Username {
 				user.IsAuthenticated = true
+				user.Id = emailUser.Id
 				user.IsMulti = emailUser.IsMulti
 				user.DefaultSection = emailUser.DefaultSection
 				user.Sections = emailUser.Sections

@@ -46,9 +46,9 @@ export const setIsMultipleSectionsUserSuccessAction = isMulti => ({
   isMulti
 });
 
-export const setIsMultipleSectionsUserFailedAction = errors => ({
+export const setIsMultipleSectionsUserFailedAction = error => ({
   type: types.SET_MULTIPLE_SECTION_USER_FAILURE,
-  errors
+  error
 });
 
 export const loadDynamicYieldRequestAction = section => ({
@@ -63,5 +63,40 @@ export const loadDynamicYieldSuccessAction = isDYLoaded => ({
 
 export const loadDynamicYieldFailureAction = error => ({
   type: types.LOAD_DYNAMIC_YIELD_FAILURE_ACTION,
+  error
+});
+
+export const changeActiveSectionAction = section => ({
+  type: types.UPDATE_ACTIVE_SECTION,
+  section
+});
+
+export const addUserSectionRequestAction = section => ({
+  type: types.ADD_USER_SECTION_REQUEST,
+  section
+});
+
+export const addUserSectionSuccessAction = section => ({
+  type: types.ADD_USER_SECTION_SUCCESS,
+  section
+});
+
+export const addUserSectionFailureAction = error => ({
+  type: types.ADD_USER_SECTION_FAILURE,
+  error
+});
+
+export const delUserSectionRequestAction = section => ({
+  type: types.DEL_USER_SECTION_REQUEST,
+  section
+});
+
+export const delUserSectionSuccessAction = section => ({
+  type: types.DEL_USER_SECTION_SUCCESS,
+  section
+});
+
+export const delUserSectionFailureAction = error => ({
+  type: types.DEL_USER_SECTION_FAILURE,
   error
 });

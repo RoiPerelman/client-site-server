@@ -18,6 +18,8 @@ export function* rootSaga() {
     'LOAD_DYNAMIC_YIELD_REQUEST_ACTION',
     loadDynamicYieldRequestSaga
   );
+  yield takeEvery('ADD_USER_SECTION_REQUEST', addSectionToUserRequestSaga);
+  yield takeEvery('DEL_USER_SECTION_REQUEST', delSectionToUserRequestSaga);
 }
 
 export function* signupUserRequestSaga(action) {
@@ -29,6 +31,17 @@ export function* signupUserRequestSaga(action) {
   } catch (err) {
     console.log('err is ' + err);
     yield put(actions.signupUserFailedAction(err.response.data.errors));
+  }
+}
+
+export function* loginUserRequestSaga(action) {
+  try {
+    const user = yield call(api.login, action.user);
+    localStorage.RPJWT = user.token;
+    yield fetchCurrentUserRequestSaga();
+    history.push('/');
+  } catch (err) {
+    yield put(actions.loginUserFailedAction(err.response.data.errors));
   }
 }
 
@@ -49,15 +62,13 @@ export function* fetchCurrentUserRequestSaga() {
   }
 }
 
-export function* loginUserRequestSaga(action) {
+export function* loadDynamicYieldRequestSaga(action) {
   try {
-    const user = yield call(api.login, action.user);
-    console.log(user);
-    localStorage.RPJWT = user.token;
-    yield fetchCurrentUserRequestSaga();
-    history.push('/');
-  } catch (err) {
-    yield put(actions.loginUserFailedAction(err.response.data.errors));
+    yield put(actions.changeActiveSectionAction(action.section));
+    yield loadDynamicYield(action.section);
+    yield put(actions.loadDynamicYieldSuccessAction(true));
+  } catch (e) {
+    yield put(actions.loadDynamicYieldFailureAction(e.stack));
   }
 }
 
@@ -65,10 +76,8 @@ export function* setMultipleSectionUserSaga(action) {
   try {
     let isMulti = yield call(api.setMultipleSections, action.isMulti);
     console.log(isMulti);
-    isMulti = action.isMulti;
     yield put(actions.setIsMultipleSectionsUserSuccessAction(isMulti));
   } catch (err) {
-    console.log(err.response.data.errors || 'failed');
     yield put(
       actions.setIsMultipleSectionsUserFailedAction(
         err.response.data.errors || 'failed'
@@ -77,13 +86,28 @@ export function* setMultipleSectionUserSaga(action) {
   }
 }
 
-export function* loadDynamicYieldRequestSaga(action) {
+export function* addSectionToUserRequestSaga(action) {
   try {
-    console.log('in loadDynamicYieldRequestSaga ' + action);
-    yield loadDynamicYield(action.section);
-    yield put(actions.loadDynamicYieldSuccessAction(true));
-  } catch (e) {
-    console.log('in catch block loadDynamicYieldRequestSaga');
-    yield put(actions.loadDynamicYieldFailureAction(e.stack));
+    yield call(api.addSection, action.section);
+    yield put(actions.addUserSectionSuccessAction(action.section));
+  } catch (err) {
+    yield put(
+      actions.addUserSectionFailureAction(
+        err.response.data.errors || 'failed to add section'
+      )
+    );
+  }
+}
+
+export function* delSectionToUserRequestSaga(action) {
+  try {
+    yield call(api.delSection, action.section);
+    yield put(actions.delUserSectionSuccessAction(action.section));
+  } catch (err) {
+    yield put(
+      actions.delUserSectionFailureAction(
+        err.response.data.errors || 'failed to del section'
+      )
+    );
   }
 }

@@ -149,11 +149,36 @@ func UpdateIsMultipleSectionFeature(id int, isMulti bool) {
 	query := fmt.Sprintf(
 		`UPDATE users
 			SET useMultipleSections=%v
-			WHERE id='%vss'
+			WHERE id='%v'
 		`, isMulti, id)
 	insert, err := db.Query(query)
 	if err != nil {
+		fmt.Printf("update err %v\n", err.Error())
+		panic(err.Error())
+	}
+	defer insert.Close()
+}
+
+func AddSection(id int, section int) {
+	// create user in database
+	query := fmt.Sprintf(
+		`INSERT INTO sections (userId, section)
+			VALUES ('%v', '%v')`, id, section)
+	insert, err := db.Query(query)
+	if err != nil {
 		fmt.Printf("insert err %v\n", err.Error())
+		panic(err.Error())
+	}
+	defer insert.Close()
+}
+
+func DelSection(id int, section int) {
+	// create user in database
+	query := fmt.Sprintf(
+		`DELETE FROM sections WHERE userId=%v AND section=%v`, id, section)
+	insert, err := db.Query(query)
+	if err != nil {
+		fmt.Printf("delete err %v\n", err.Error())
 		panic(err.Error())
 	}
 	defer insert.Close()
