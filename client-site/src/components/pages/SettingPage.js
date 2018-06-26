@@ -4,23 +4,18 @@ import { setIsMultipleSectionsUserRequestAction } from '../../store/user/actions
 import { connect } from 'react-redux';
 
 class SettingsPage extends React.Component {
-  constructor(props) {
-    super(props);
-    this.toggle = this.toggle.bind(this);
-  }
-
-  toggle() {
-    this.props.setIsMultipleSectionsUserRequest(!this.props.user.isMulti);
-  }
+  toggle = () => {
+    this.props.setIsMultipleSectionsUserRequest(!this.props.isMulti);
+  };
 
   render() {
-    const { isMulti, errors } = this.props.user;
+    const { isMulti, isMultiErrors } = this.props;
 
     return (
       <div>
         <label className="switch">
-          {errors.isMulti && (
-            <div className="alert alert-danger">{errors.isMulti}</div>
+          {isMultiErrors && (
+            <div className="alert alert-danger">{isMultiErrors}</div>
           )}
           <input type="checkbox" checked={isMulti} onChange={this.toggle} />
           <span className="slider round"> use multiple sections</span>
@@ -37,7 +32,8 @@ class SettingsPage extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    user: state.user
+    isMulti: state.user.isMulti,
+    isMultiErrors: state.user.errors.isMulti
   };
 }
 

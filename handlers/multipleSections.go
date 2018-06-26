@@ -3,6 +3,10 @@ package handlers
 import (
 "net/http"
 "encoding/json"
+	"github.com/roiperelman/client-site-server/models"
+	"strings"
+	"github.com/dgrijalva/jwt-go"
+	"fmt"
 )
 
 func MultipleSectionsUser(w http.ResponseWriter, r *http.Request) {
@@ -20,7 +24,30 @@ func MultipleSectionsUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//user.Password = ""
+	auth := strings.SplitN(r.Header.Get("Authorization"), " ", 2)
+	if len(auth) != 2 || auth[0] != "Bearer" {
+		http.Error(w, "authorization failed", http.StatusUnauthorized)
+		return
+	}
+
+	token, err := jwt.Parse(auth[1], func(token *jwt.Token) (interface{}, error) {
+		// Validate the alg is HMAC
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(secret), nil
+	})
+
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+	} else {
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			models.UpdateIsMultipleSectionFeature(int(claims["id"].(float64)), isMulti)
+		} else {
+			w.WriteHeader(http.StatusUnauthorized)
+		}
+	}
+
 	w.Header().Set("content-type", "application/json")
-	enc.Encode([]byte("aaaaaa"))
+	enc.Encode(isMulti)
 }

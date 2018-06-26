@@ -4,10 +4,7 @@ export const signupUserRequestAction = user => ({
   type: types.SIGNUP_USER_REQUEST,
   user
 });
-export const signupUserSuccessAction = user => ({
-  type: types.SIGNUP_USER_SUCCESS,
-  user
-});
+
 export const signupUserFailedAction = errors => ({
   type: types.SIGNUP_USER_FAILURE,
   errors
@@ -29,10 +26,7 @@ export const loginUserRequestAction = user => ({
   type: types.LOGIN_USER_REQUEST,
   user
 });
-export const loginUserSuccessAction = user => ({
-  type: types.LOGIN_USER_SUCCESS,
-  user
-});
+
 export const loginUserFailedAction = errors => ({
   type: types.LOGIN_USER_FAILURE,
   errors
@@ -55,4 +49,19 @@ export const setIsMultipleSectionsUserSuccessAction = isMulti => ({
 export const setIsMultipleSectionsUserFailedAction = errors => ({
   type: types.SET_MULTIPLE_SECTION_USER_FAILURE,
   errors
+});
+
+export const loadDynamicYieldRequestAction = section => ({
+  type: types.LOAD_DYNAMIC_YIELD_REQUEST_ACTION,
+  section
+});
+
+export const loadDynamicYieldSuccessAction = isDYLoaded => ({
+  type: types.LOAD_DYNAMIC_YIELD_SUCCESS_ACTION,
+  isDYLoaded
+});
+
+export const loadDynamicYieldFailureAction = error => ({
+  type: types.LOAD_DYNAMIC_YIELD_FAILURE_ACTION,
+  error
 });

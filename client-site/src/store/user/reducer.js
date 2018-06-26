@@ -8,6 +8,7 @@ const initialUserState = {
   isAuthenticated: false,
   isLoaded: false, // after we load all user information from the server
   isDYLoaded: false,
+  isDYLoading: false,
   defaultSection: '',
   sectionId: '',
   token: '',
@@ -18,15 +19,13 @@ const initialUserState = {
     username: '',
     password: '',
     server: '',
-    multipleSections: ''
+    multipleSections: '',
+    DYRequest: ''
   }
 };
 
 export const userReducer = (state = initialUserState, action = {}) => {
   switch (action.type) {
-    case types.SIGNUP_USER_SUCCESS:
-    case types.LOGIN_USER_SUCCESS:
-      return { ...state, ...action.user };
     case types.SIGNUP_USER_FAILURE:
     case types.LOGIN_USER_FAILURE:
       return { ...state, errors: action.errors || state.errors };
@@ -52,6 +51,26 @@ export const userReducer = (state = initialUserState, action = {}) => {
       return {
         ...state,
         errors: action.errors
+      };
+    case types.LOAD_DYNAMIC_YIELD_REQUEST_ACTION:
+      return {
+        ...state,
+        isDYLoading: true
+      };
+    case types.LOAD_DYNAMIC_YIELD_SUCCESS_ACTION:
+      return {
+        ...state,
+        isDYLoaded: action.isDYLoaded,
+        isDYLoading: false
+      };
+    case types.LOAD_DYNAMIC_YIELD_FAILURE_ACTION:
+      return {
+        ...state,
+        errors: {
+          ...state.errors,
+          DYRequest: action.error
+        },
+        isDYLoading: false
       };
     default:
       return state;

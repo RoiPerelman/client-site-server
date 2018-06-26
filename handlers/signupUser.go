@@ -30,8 +30,7 @@ func SignupUser(w http.ResponseWriter, r *http.Request) {
 	if success := user.Insert(); success == true {
 		user.AddToken(secret)
 	} else {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		w.WriteHeader(http.StatusConflict)
 	}
 
 	// Marshal the struct to []byte format

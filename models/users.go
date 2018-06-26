@@ -23,7 +23,7 @@ type UserErrors struct {
 }
 
 type User struct {
-	Id              int        `json:"-"`
+	Id              int        `json:"id"`
 	Email           string     `json:"email"`
 	Username        string     `json:"username"`
 	Password        string     `json:"password"`
@@ -76,7 +76,7 @@ func GetUserByEmail(email string) *User {
 }
 
 func GetUserByUsername(username string) *User {
-	query := fmt.Sprintf("SELECT email, username, passwordHash, DefaultSection FROM users WHERE username='%v'", username)
+	query := fmt.Sprintf("SELECT id, email, username, passwordHash, DefaultSection, useMultipleSections FROM users WHERE username='%v'", username)
 	results, err := db.Query(query)
 	if err != nil {
 		log.Panic(err)
@@ -85,7 +85,7 @@ func GetUserByUsername(username string) *User {
 	found := results.Next()
 	if found {
 		user := new(User)
-		err = results.Scan(&user.Email, &user.Username, &user.PasswordHash, &user.DefaultSection)
+		err = results.Scan(&user.Id, &user.Email, &user.Username, &user.PasswordHash, &user.DefaultSection, &user.IsMulti)
 		return user
 	}
 	return nil
@@ -121,6 +121,7 @@ func (user *User) Insert() bool {
 
 func (user *User) AddToken(secret string) error {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"id":  user.Id,
 		"username":  user.Username,
 		"email":     user.Email,
 		"timestamp": time.Now().Unix(),
@@ -141,4 +142,19 @@ func (user *User) SwitchPasswordToPasswordHash() error {
 	user.PasswordHash = string(passwordHash)
 	user.Password = ""
 	return err
+}
+
+func UpdateIsMultipleSectionFeature(id int, isMulti bool) {
+	// create user in database
+	query := fmt.Sprintf(
+		`UPDATE users
+			SET useMultipleSections=%v
+			WHERE id='%vss'
+		`, isMulti, id)
+	insert, err := db.Query(query)
+	if err != nil {
+		fmt.Printf("insert err %v\n", err.Error())
+		panic(err.Error())
+	}
+	defer insert.Close()
 }

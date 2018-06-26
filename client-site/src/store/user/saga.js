@@ -14,16 +14,20 @@ export function* rootSaga() {
     'SET_MULTIPLE_SECTION_USER_REQUEST',
     setMultipleSectionUserSaga
   );
+  yield takeEvery(
+    'LOAD_DYNAMIC_YIELD_REQUEST_ACTION',
+    loadDynamicYieldRequestSaga
+  );
 }
 
 export function* signupUserRequestSaga(action) {
   try {
     const user = yield call(api.signup, action.user);
     localStorage.RPJWT = user.token;
-    yield put(actions.signupUserSuccessAction(user));
+    yield fetchCurrentUserRequestSaga();
     history.push('/');
-    window.location.reload();
   } catch (err) {
+    console.log('err is ' + err);
     yield put(actions.signupUserFailedAction(err.response.data.errors));
   }
 }
@@ -34,10 +38,7 @@ export function* fetchCurrentUserRequestSaga() {
       setAuthorizationHeader(localStorage.RPJWT);
       const user = yield call(api.authorize);
       if (!user.isMulti) {
-        yield loadDynamicYield(user.defaultSection).catch(e => {
-          console.log(e.stack);
-        });
-        user.isDYLoaded = true;
+        yield loadDynamicYieldRequestSaga({ section: user.defaultSection });
       }
       yield put(actions.fetchCurrentUserSuccessAction(user));
     } else {
@@ -51,10 +52,10 @@ export function* fetchCurrentUserRequestSaga() {
 export function* loginUserRequestSaga(action) {
   try {
     const user = yield call(api.login, action.user);
+    console.log(user);
     localStorage.RPJWT = user.token;
-    yield put(actions.loginUserSuccessAction(user));
+    yield fetchCurrentUserRequestSaga();
     history.push('/');
-    window.location.reload();
   } catch (err) {
     yield put(actions.loginUserFailedAction(err.response.data.errors));
   }
@@ -62,8 +63,9 @@ export function* loginUserRequestSaga(action) {
 
 export function* setMultipleSectionUserSaga(action) {
   try {
-    // const isMulti = yield call(api.setMultipleSections, action.isMulti);
-    const isMulti = action.isMulti;
+    let isMulti = yield call(api.setMultipleSections, action.isMulti);
+    console.log(isMulti);
+    isMulti = action.isMulti;
     yield put(actions.setIsMultipleSectionsUserSuccessAction(isMulti));
   } catch (err) {
     console.log(err.response.data.errors || 'failed');
@@ -72,5 +74,16 @@ export function* setMultipleSectionUserSaga(action) {
         err.response.data.errors || 'failed'
       )
     );
+  }
+}
+
+export function* loadDynamicYieldRequestSaga(action) {
+  try {
+    console.log('in loadDynamicYieldRequestSaga ' + action);
+    yield loadDynamicYield(action.section);
+    yield put(actions.loadDynamicYieldSuccessAction(true));
+  } catch (e) {
+    console.log('in catch block loadDynamicYieldRequestSaga');
+    yield put(actions.loadDynamicYieldFailureAction(e.stack));
   }
 }
