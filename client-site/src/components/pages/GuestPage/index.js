@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Col } from 'reactstrap';
-import Logo from '../../Logo.svg';
+import Logo from '../../../Logo.svg';
 import LoginPage from './LoginPage';
 import SignupPage from './SignupPage';
 import { Route } from 'react-router-dom';

@@ -51,7 +51,10 @@ export function* fetchCurrentUserRequestSaga() {
       setAuthorizationHeader(localStorage.RPJWT);
       const user = yield call(api.authorize);
       if (!user.isMulti) {
-        yield loadDynamicYieldRequestSaga({ section: user.defaultSection });
+        yield loadDynamicYieldRequestSaga(
+          { section: user.defaultSection },
+          "console.log('this is evaled js code')"
+        );
       }
       yield put(actions.fetchCurrentUserSuccessAction(user));
     } else {
@@ -62,10 +65,10 @@ export function* fetchCurrentUserRequestSaga() {
   }
 }
 
-export function* loadDynamicYieldRequestSaga(action) {
+export function* loadDynamicYieldRequestSaga(action, jsCode) {
   try {
     yield put(actions.changeActiveSectionAction(action.section));
-    yield loadDynamicYield(action.section);
+    yield loadDynamicYield(action.section, jsCode);
     yield put(actions.loadDynamicYieldSuccessAction(true));
   } catch (e) {
     yield put(actions.loadDynamicYieldFailureAction(e.stack));

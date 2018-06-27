@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Validator from 'validator';
 import { connect } from 'react-redux';
-import { loginUserRequestAction } from '../../store/user/actions';
+import { loginUserRequestAction } from '../../../../store/user/actions';
 
 class LoginForm extends React.Component {
   state = {

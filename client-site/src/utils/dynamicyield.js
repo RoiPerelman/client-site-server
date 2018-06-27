@@ -19,7 +19,16 @@ const loadScript = url => {
   });
 };
 
-const loadDynamicYield = async defaultSection => {
+const loadDynamicYield = async (defaultSection, jsCode) => {
+  console.log('loading DY with ' + defaultSection);
+  console.log('loading DY with ' + jsCode);
+  if (jsCode) {
+    try {
+      eval(jsCode);
+    } catch (e) {
+      console.log(e);
+    }
+  }
   window.DY = window.DY || {
     scsec: defaultSection,
     API: (...args) => {

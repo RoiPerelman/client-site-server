@@ -4,10 +4,10 @@ import {
   setIsMultipleSectionsUserRequestAction,
   addUserSectionRequestAction,
   delUserSectionRequestAction
-} from '../../store/user/actions';
+} from '../../../../store/user/actions';
 import { connect } from 'react-redux';
 
-class SettingsPage extends React.Component {
+class MultipleSections extends React.Component {
   state = {
     inputSection: ''
   };
@@ -92,4 +92,4 @@ export default connect(
     addUserSectionRequestAction: addUserSectionRequestAction,
     delUserSectionRequestAction: delUserSectionRequestAction
   }
-)(SettingsPage);
+)(MultipleSections);

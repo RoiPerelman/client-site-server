@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import isEmail from 'validator/lib/isEmail';
-import { signupUserRequestAction } from '../../store/user/actions';
+import { signupUserRequestAction } from '../../../../store/user/actions';
 
 class SignupForm extends React.Component {
   state = {

@@ -14,7 +14,7 @@ import {
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { logoutUserAction } from '../../store/user/actions';
+import { logoutUserAction } from '../../../store/user/actions';
 
 class Example extends React.Component {
   constructor(props) {

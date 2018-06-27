@@ -1,11 +1,12 @@
 import React from 'react';
-import TopNavigation from '../navigation/TopNavigation';
-import SettingsPage from './SettingPage';
+import TopNavigation from './TopNavigation';
+import TabNavigation from './TabNavigation';
+import SettingsPage from './SettingsPage';
 import { Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { loadDynamicYieldRequestAction } from '../../store/user/actions';
-import DYUserRoute from '../routes/DYUserRoute';
-import HomePage from '../pages/HomePage';
+import { loadDynamicYieldRequestAction } from '../../../store/user/actions';
+import DYUserRoute from '../../routes/DYUserRoute';
+import HomePage from './HomePage';
 
 class UserPage extends React.Component {
   render() {
@@ -13,6 +14,7 @@ class UserPage extends React.Component {
       <div className="container-fluid">
         <TopNavigation />
         {Array.from(Array(3)).map((value, idx) => <hr key={idx} />)}
+        <TabNavigation />
         <Switch>
           <Route
             path="/settings"
@@ -21,7 +23,7 @@ class UserPage extends React.Component {
               return <SettingsPage />;
             }}
           />
-          <DYUserRoute path="/" exact component={HomePage} />
+          <DYUserRoute path="/" component={HomePage} />
         </Switch>
       </div>
     );

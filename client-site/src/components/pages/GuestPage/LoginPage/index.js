@@ -1,7 +1,7 @@
 import React from 'react';
-import LoginForm from '../forms/LoginForm';
+import LoginForm from './LoginForm';
 
-const LoginPage = () => {
+const Index = () => {
   return (
     <div>
       <div className="container" style={{ height: '100vh' }}>
@@ -20,4 +20,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default Index;
