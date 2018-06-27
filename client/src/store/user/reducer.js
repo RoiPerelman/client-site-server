@@ -89,7 +89,7 @@ export const userReducer = (state = initialUserState, action = {}) => {
     case types.ADD_USER_SECTION_SUCCESS:
       return {
         ...state,
-        sections: [...state.sections, action.section],
+        sections: [...state.sections, { sectionId: action.section, name: '' }],
         errors: {
           ...state.errors,
           addSection: ''

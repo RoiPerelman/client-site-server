@@ -22,6 +22,11 @@ type UserErrors struct {
 	MultipleSections string `json:"multipleSections"`
 }
 
+type Section struct {
+	SectionId string `json:"sectionId"`
+	Name string `json:"name"`
+}
+
 type User struct {
 	Id              int        `json:"id"`
 	Email           string     `json:"email"`
@@ -32,13 +37,13 @@ type User struct {
 	Token           string     `json:"token"`
 	IsAuthenticated bool       `json:"isAuthenticated"`
 	Errors          UserErrors `json:"errors"`
-	Sections        []string   `json:"sections"`
+	Sections        []Section   `json:"sections"`
 	IsMulti         bool       `json:"isMulti"`
 }
 
 func GetUserByEmail(email string) *User {
 	// get User info
-	query := fmt.Sprintf("SELECT id, email, username, passwordHash, DefaultSection, useMultipleSections FROM users WHERE email='%v'", email)
+	query := fmt.Sprintf("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection FROM users WHERE email='%v'", email)
 	userResults, err := db.Query(query)
 	if err != nil {
 		log.Panic(err)
@@ -47,13 +52,14 @@ func GetUserByEmail(email string) *User {
 	found := userResults.Next()
 	if found {
 		user := new(User)
+		user.Sections = make([]Section, 0)
 		err = userResults.Scan(&user.Id, &user.Email, &user.Username, &user.PasswordHash, &user.DefaultSection, &user.IsMulti)
 		if err != nil {
 			log.Panic(err)
 		}
 
 		// get Sections info
-		query := fmt.Sprintf("Select section FROM sections WHERE sections.userId=%v", user.Id)
+		query := fmt.Sprintf("Select sectionId FROM sections WHERE sections.userId=%v", user.Id)
 		sectionResults, err := db.Query(query)
 		if err != nil {
 			log.Panic(err)
@@ -61,13 +67,13 @@ func GetUserByEmail(email string) *User {
 		defer sectionResults.Close()
 
 		for sectionResults.Next() {
-			var section string
-			err := sectionResults.Scan(&section)
+			section := new(Section)
+			err := sectionResults.Scan(&section.SectionId)
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			user.Sections = append(user.Sections, section)
+			user.Sections = append(user.Sections, *section)
 		}
 		return user
 	}
@@ -76,7 +82,7 @@ func GetUserByEmail(email string) *User {
 }
 
 func GetUserByUsername(username string) *User {
-	query := fmt.Sprintf("SELECT id, email, username, passwordHash, DefaultSection, useMultipleSections FROM users WHERE username='%v'", username)
+	query := fmt.Sprintf("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection FROM users WHERE username='%v'", username)
 	results, err := db.Query(query)
 	if err != nil {
 		log.Panic(err)
@@ -91,7 +97,7 @@ func GetUserByUsername(username string) *User {
 	return nil
 }
 
-func (user *User) Insert() bool {
+func (user *User) Insert() (int, bool) {
 	emailUser := GetUserByEmail(user.Email)
 	nameUser := GetUserByUsername(user.Username)
 
@@ -103,20 +109,34 @@ func (user *User) Insert() bool {
 		if emailUser != nil {
 			user.Errors.Email = "A User with this email exists"
 		}
-		return false
+		return 0, false
 	}
 
 	// create user in database
 	query := fmt.Sprintf(
 		`INSERT INTO users (email, username, passwordHash, DefaultSection)
 			VALUES ('%v', '%v', '%v', '%v')`, user.Email, user.Username, user.PasswordHash, user.DefaultSection)
-	insert, err := db.Query(query)
+	insert, err := db.Exec(query)
 	if err != nil {
 		fmt.Printf("insert err %v\n", err.Error())
 		panic(err.Error())
 	}
-	defer insert.Close()
-	return true
+	id, err := insert.LastInsertId()
+	if err != nil {
+		fmt.Printf("insert err %v\n", err.Error())
+		panic(err.Error())
+	}
+	//create section in database
+	query = fmt.Sprintf(
+		`INSERT INTO sections (userId, sectionId)
+			VALUES ('%v', '%v')`, id, user.DefaultSection)
+	insert, err = db.Exec(query)
+	if err != nil {
+		fmt.Printf("insert err %v\n", err.Error())
+		panic(err.Error())
+	}
+	//defer insert.Close()
+	return int(id), true
 }
 
 func (user *User) AddToken(secret string) error {
@@ -148,7 +168,7 @@ func UpdateIsMultipleSectionFeature(id int, isMulti bool) {
 	// create user in database
 	query := fmt.Sprintf(
 		`UPDATE users
-			SET useMultipleSections=%v
+			SET isMultipleSection=%v
 			WHERE id='%v'
 		`, isMulti, id)
 	insert, err := db.Query(query)
@@ -162,7 +182,7 @@ func UpdateIsMultipleSectionFeature(id int, isMulti bool) {
 func AddSection(id int, section int) {
 	// create user in database
 	query := fmt.Sprintf(
-		`INSERT INTO sections (userId, section)
+		`INSERT INTO sections (userId, sectionId)
 			VALUES ('%v', '%v')`, id, section)
 	insert, err := db.Query(query)
 	if err != nil {
@@ -175,7 +195,7 @@ func AddSection(id int, section int) {
 func DelSection(id int, section int) {
 	// create user in database
 	query := fmt.Sprintf(
-		`DELETE FROM sections WHERE userId=%v AND section=%v`, id, section)
+		`DELETE FROM sections WHERE userId=%v AND sectionId=%v`, id, section)
 	insert, err := db.Query(query)
 	if err != nil {
 		fmt.Printf("delete err %v\n", err.Error())

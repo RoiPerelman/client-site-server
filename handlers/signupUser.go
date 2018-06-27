@@ -27,7 +27,8 @@ func SignupUser(w http.ResponseWriter, r *http.Request) {
 
 	user.SwitchPasswordToPasswordHash()
 	// insert method implicitly adds errors to user struct
-	if success := user.Insert(); success == true {
+	if id, success := user.Insert(); success == true {
+		user.Id = id
 		user.AddToken(secret)
 	} else {
 		w.WriteHeader(http.StatusConflict)

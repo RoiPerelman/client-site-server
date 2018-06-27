@@ -8,14 +8,20 @@ class TabNavigation extends React.Component {
     selectedIdx: null
   };
 
-  pageTypes = { HomePage: 0, ProductPage: 1, CategoryPage: 2, CartPage: 3 };
+  pageTypes = {
+    HomePage: { idx: 0, type: 'HOMEPAGE' },
+    ProductPage: { idx: 1, type: 'PRODUCT' },
+    CategoryPage: { idx: 2, type: 'CATEGORY' },
+    CartPage: { idx: 3, type: 'CART' },
+    OtherPage: { idx: 4, type: 'OTHER' }
+  };
 
   onClick = (pageType, idx) => {
     this.setState({ selectedIdx: idx });
     history.push('/' + pageType);
     if (window.DY && window.DY.API) {
       window.DY.API('spa', {
-        context: { type: 'HOMEPAGE' },
+        context: { type: this.pageTypes[pageType].type, data: [] },
         // context: { type: 'PRODUCT', data: ['1217282-400'] },
         url: window.location.href,
         countAsPageview: true
@@ -29,9 +35,12 @@ class TabNavigation extends React.Component {
 
   componentDidMount() {
     this.setState({
-      selectedIdx: this.pageTypes[this.cutPathname(history.location.pathname)]
+      selectedIdx: this.pageTypes[
+        this.cutPathname(history.location.pathname).idx
+      ]
     });
   }
+
   render() {
     return (
       <div>
@@ -48,7 +57,8 @@ class TabNavigation extends React.Component {
             </NavItem>
           ))}
         </Nav>
-        <hr />
+        <br />
+        {/*<hr />*/}
       </div>
     );
   }

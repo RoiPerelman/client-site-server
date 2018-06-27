@@ -25,15 +25,15 @@ class ChooseSectionPage extends React.Component {
         {DYRequestError && (
           <div className="alert alert-danger">{DYRequestError}</div>
         )}
-        {sections.map((section, id) => {
+        {Object.keys(sections).map(idx => {
           return (
             <button
-              key={id}
-              section={section}
+              key={idx}
+              section={sections[idx].sectionId}
               color="primary"
-              onClick={() => this.onClick(section)}
+              onClick={() => this.onClick(sections[idx].sectionId)}
             >
-              {section}
+              {sections[idx].sectionId}
             </button>
           );
         })}

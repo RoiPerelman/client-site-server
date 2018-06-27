@@ -1,19 +1,30 @@
 import React from 'react';
-import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import { Button, Form, FormGroup, Input, FormText } from 'reactstrap';
 
 export default class Example extends React.Component {
   render() {
     return (
-      <Form>
-        <FormGroup>
-          <Label for="exampleText">JS code to run before DY is loaded</Label>
-          <FormText color="muted">
-            TODO write some good info about this thing
-          </FormText>
-          <Input type="textarea" name="text" id="exampleText" />
-        </FormGroup>
-        <Button>Submit</Button>
-      </Form>
+      <div className="row">
+        <div className="col-6">
+          <Form>
+            <h3>JSCode</h3>
+            <br />
+            <FormGroup>
+              <Input
+                type="textarea"
+                name="text"
+                id="exampleText"
+                placeholder="console.log('it works')"
+                style={{ height: '200px' }}
+              />
+              <FormText color="muted">
+                JS code to run before DY is loaded
+              </FormText>
+            </FormGroup>
+            <Button>Submit</Button>
+          </Form>
+        </div>
+      </div>
     );
   }
 }

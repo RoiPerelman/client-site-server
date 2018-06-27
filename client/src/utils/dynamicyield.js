@@ -24,6 +24,7 @@ const loadDynamicYield = async (defaultSection, jsCode) => {
   console.log('loading DY with ' + jsCode);
   if (jsCode) {
     try {
+      // eslint-disable-next-line
       eval(jsCode);
     } catch (e) {
       console.log(e);
