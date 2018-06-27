@@ -6,7 +6,7 @@
 .vscode
 
 #client-site stuff
-client-site/node_modules
+client/node_modules
 
 #env files
 .env
