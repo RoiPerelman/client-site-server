@@ -22,11 +22,6 @@ type UserErrors struct {
 	MultipleSections string `json:"multipleSections"`
 }
 
-type Section struct {
-	SectionId string `json:"sectionId"`
-	Name string `json:"name"`
-}
-
 type User struct {
 	Id              int        `json:"id"`
 	Email           string     `json:"email"`
@@ -59,7 +54,7 @@ func GetUserByEmail(email string) *User {
 		}
 
 		// get Sections info
-		query := fmt.Sprintf("Select sectionId FROM sections WHERE sections.userId=%v", user.Id)
+		query := fmt.Sprintf("Select id, sectionId FROM sections WHERE sections.userId=%v", user.Id)
 		sectionResults, err := db.Query(query)
 		if err != nil {
 			log.Panic(err)
@@ -68,7 +63,7 @@ func GetUserByEmail(email string) *User {
 
 		for sectionResults.Next() {
 			section := new(Section)
-			err := sectionResults.Scan(&section.SectionId)
+			err := sectionResults.Scan(&section.Id, &section.SectionId)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -162,44 +157,4 @@ func (user *User) SwitchPasswordToPasswordHash() error {
 	user.PasswordHash = string(passwordHash)
 	user.Password = ""
 	return err
-}
-
-func UpdateIsMultipleSectionFeature(id int, isMulti bool) {
-	// create user in database
-	query := fmt.Sprintf(
-		`UPDATE users
-			SET isMultipleSection=%v
-			WHERE id='%v'
-		`, isMulti, id)
-	insert, err := db.Query(query)
-	if err != nil {
-		fmt.Printf("update err %v\n", err.Error())
-		panic(err.Error())
-	}
-	defer insert.Close()
-}
-
-func AddSection(id int, section int) {
-	// create user in database
-	query := fmt.Sprintf(
-		`INSERT INTO sections (userId, sectionId)
-			VALUES ('%v', '%v')`, id, section)
-	insert, err := db.Query(query)
-	if err != nil {
-		fmt.Printf("insert err %v\n", err.Error())
-		panic(err.Error())
-	}
-	defer insert.Close()
-}
-
-func DelSection(id int, section int) {
-	// create user in database
-	query := fmt.Sprintf(
-		`DELETE FROM sections WHERE userId=%v AND sectionId=%v`, id, section)
-	insert, err := db.Query(query)
-	if err != nil {
-		fmt.Printf("delete err %v\n", err.Error())
-		panic(err.Error())
-	}
-	defer insert.Close()
 }

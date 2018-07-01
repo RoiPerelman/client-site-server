@@ -58,20 +58,20 @@ class MultipleSectionsForm extends React.Component {
                 <thead>
                   <tr>
                     <th>#</th>
-                    <th>Section</th>
+                    <th>id</th>
+                    <th>SectionId</th>
+                    <th>name</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.keys(sections).map(idx => {
-                    return (
-                      <tr key={idx}>
-                        <th scope="row">{idx}</th>
-                        <td onClick={this.delSection}>
-                          {sections[idx].sectionId}
-                        </td>
-                      </tr>
-                    );
-                  })}
+                  {Object.keys(sections).map(idx => (
+                    <tr key={idx}>
+                      <th scope="row">{idx}</th>
+                      <td>{sections[idx].id}</td>
+                      <td>{sections[idx].sectionId}</td>
+                      <td>{sections[idx].name || 'noName'}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </Table>
             </Collapse>

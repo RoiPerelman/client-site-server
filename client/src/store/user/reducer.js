@@ -15,6 +15,11 @@ const initialUserState = {
   token: '',
   isMulti: false,
   sections: [],
+  contexts: {
+    productContext: [],
+    cartContext: [],
+    categoryContext: []
+  },
   errors: {
     email: '',
     username: '',
@@ -119,6 +124,21 @@ export const userReducer = (state = initialUserState, action = {}) => {
           ...state.errors,
           addSection: action.error
         }
+      };
+    case types.ADD_PRODUCT_CONTEXT_REQUEST:
+      return {
+        ...state,
+        ADD_PRODUCT_CONTEXT_REQUEST: 'ADD_PRODUCT_CONTEXT_REQUEST'
+      };
+    case types.ADD_CART_CONTEXT_REQUEST:
+      return {
+        ...state,
+        ADD_CART_CONTEXT_REQUEST: 'ADD_CART_CONTEXT_REQUEST'
+      };
+    case types.ADD_CATEGORY_CONTEXT_REQUEST:
+      return {
+        ...state,
+        ADD_CATEGORY_CONTEXT_REQUEST: 'ADD_CATEGORY_CONTEXT_REQUEST'
       };
     default:
       return state;
