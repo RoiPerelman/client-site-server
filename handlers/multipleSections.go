@@ -4,9 +4,6 @@ import (
 "net/http"
 "encoding/json"
 	"github.com/roiperelman/client-site-server/models"
-	"strings"
-	"github.com/dgrijalva/jwt-go"
-	"fmt"
 )
 
 func MultipleSectionsUser(w http.ResponseWriter, r *http.Request) {
@@ -24,30 +21,65 @@ func MultipleSectionsUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	auth := strings.SplitN(r.Header.Get("Authorization"), " ", 2)
-	if len(auth) != 2 || auth[0] != "Bearer" {
-		http.Error(w, "authorization failed", http.StatusUnauthorized)
-		return
-	}
-
-	token, err := jwt.Parse(auth[1], func(token *jwt.Token) (interface{}, error) {
-		// Validate the alg is HMAC
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return []byte(secret), nil
-	})
-
-	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
+	if user := r.Context().Value("User"); user != nil {
+		models.UpdateIsMultipleSectionFeature(user.(models.User).Id, isMulti)
 	} else {
-		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			models.UpdateIsMultipleSectionFeature(int(claims["id"].(float64)), isMulti)
-		} else {
-			w.WriteHeader(http.StatusUnauthorized)
-		}
+		http.Error(w, "authorize user failed", http.StatusInternalServerError)
+		return
 	}
 
 	w.Header().Set("content-type", "application/json")
 	enc.Encode(isMulti)
+}
+
+func AddSectionUser(w http.ResponseWriter, r *http.Request) {
+	var section float64 // create a struct to hold data
+
+	// create a request.body decoder
+	// which has a method Decode that gets a struct to hold the data
+	dec := json.NewDecoder(r.Body)
+	// create writer encoder
+	// which has a method Encode that gets a struct and writes json response
+	enc := json.NewEncoder(w)
+	err := dec.Decode(&section)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if user := r.Context().Value("User"); user != nil {
+		models.AddSection(user.(models.User).Id, int(section))
+	} else {
+		http.Error(w, "authorize user failed", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("content-type", "application/json")
+	enc.Encode(section)
+}
+
+func DelSectionUser(w http.ResponseWriter, r *http.Request) {
+	var section float64 // create a struct to hold data
+
+	// create a request.body decoder
+	// which has a method Decode that gets a struct to hold the data
+	dec := json.NewDecoder(r.Body)
+	// create writer encoder
+	// which has a method Encode that gets a struct and writes json response
+	enc := json.NewEncoder(w)
+	err := dec.Decode(&section)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if user := r.Context().Value("User"); user != nil {
+		models.DelSection(user.(models.User).Id, int(section))
+	} else {
+		http.Error(w, "authrize user failed", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("content-type", "application/json")
+	enc.Encode(section)
 }
