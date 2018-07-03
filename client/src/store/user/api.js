@@ -9,5 +9,9 @@ export default {
   addSection: section =>
     axios.post('/api/user/addSection', section).then(res => res.data),
   delSection: section =>
-    axios.post('/api/user/delSection', section).then(res => res.data)
+    axios.post('/api/user/delSection', section).then(res => res.data),
+  addContextItem: contextItem =>
+    axios.post('/api/user/addContextItem', contextItem).then(res => res.data),
+  delContextItem: contextItem =>
+    axios.post('/api/user/delContextItem', contextItem).then(res => res.data)
 };

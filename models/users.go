@@ -63,9 +63,36 @@ func GetUserByEmail(email string) *User {
 
 		for sectionResults.Next() {
 			section := new(Section)
+			section.Contexts.ProductContext = make([]string, 0)
+			section.Contexts.CartContext = make([]string, 0)
+			section.Contexts.CategoryContext = make([]string, 0)
 			err := sectionResults.Scan(&section.Id, &section.SectionId)
 			if err != nil {
 				log.Fatal(err)
+			}
+
+			query := fmt.Sprintf("Select type, item FROM contexts WHERE contexts.sectionsId=%v", section.Id)
+			contextResults, err := db.Query(query)
+			if err != nil {
+				log.Panic(err)
+			}
+			defer contextResults.Close()
+
+			for contextResults.Next() {
+				contextItem := new(ContextItem)
+				err := contextResults.Scan(&contextItem.ContextType, &contextItem.Item)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				switch contextType := contextItem.ContextType; contextType {
+				case "PRODUCT":
+					section.Contexts.ProductContext = append(section.Contexts.ProductContext, contextItem.Item)
+				case "CART":
+					section.Contexts.CartContext = append(section.Contexts.CartContext, contextItem.Item)
+				case "CATEGORY":
+					section.Contexts.CategoryContext = append(section.Contexts.CategoryContext, contextItem.Item)
+				}
 			}
 
 			user.Sections = append(user.Sections, *section)

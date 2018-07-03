@@ -37,6 +37,8 @@ func main() {
 	r.Handle("/api/user/multipleSections", middlewares.Authenticate(http.HandlerFunc(handlers.MultipleSectionsUser))).Methods("POST")
 	r.Handle("/api/user/addSection", middlewares.Authenticate(http.HandlerFunc(handlers.AddSectionUser))).Methods("POST")
 	r.Handle("/api/user/delSection", middlewares.Authenticate(http.HandlerFunc(handlers.DelSectionUser))).Methods("POST")
+	r.Handle("/api/user/addContextItem", middlewares.Authenticate(http.HandlerFunc(handlers.AddContextItem))).Methods("POST")
+	r.Handle("/api/user/delContextItem", middlewares.Authenticate(http.HandlerFunc(handlers.DelContextItem))).Methods("POST")
 	r.PathPrefix("/static").Handler(http.FileServer(http.Dir(staticLocation)))
 	r.PathPrefix("/").HandlerFunc(staticFileHandler(staticLocation + "/index.html"))
 

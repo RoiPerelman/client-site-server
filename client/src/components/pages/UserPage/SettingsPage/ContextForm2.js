@@ -1,22 +1,54 @@
 import React from 'react';
 import { Table } from 'reactstrap';
+import {
+  addContextItemRequestAction,
+  delContextItemRequestAction
+} from '../../../../store/user/actions';
+import { connect } from 'react-redux';
 
 class ContextForm2 extends React.Component {
+  state = {
+    contextItem: ''
+  };
+
+  onChange = e => this.setState({ contextItem: e.target.value });
+
   render() {
-    const { state, onChange, context, addItem, delItem } = this.props;
+    const {
+      sectionsId,
+      contextType,
+      context,
+      addContextItemRequestAction,
+      delContextItemRequestAction
+    } = this.props;
     return (
       <div>
         <label className="switch">
-          <input
-            type="text"
-            placeholder={`Item`}
-            value={state}
-            onChange={onChange}
-          />
-          <button type="button" onClick={addItem} className="small">
+          <input type="text" placeholder={`Item`} onChange={this.onChange} />
+          <button
+            type="button"
+            onClick={() =>
+              addContextItemRequestAction({
+                sectionsId: sectionsId,
+                contextType: contextType,
+                item: this.state.contextItem
+              })
+            }
+            className="small"
+          >
             Add Item
           </button>
-          <button type="button" onClick={delItem} className="small">
+          <button
+            type="button"
+            onClick={() =>
+              delContextItemRequestAction({
+                sectionsId: sectionsId,
+                contextType: contextType,
+                item: this.state.contextItem
+              })
+            }
+            className="small"
+          >
             Del Item
           </button>
           <Table>
@@ -31,7 +63,7 @@ class ContextForm2 extends React.Component {
               {Object.keys(context).map(idx => (
                 <tr key={idx}>
                   <th scope="row">{idx}</th>
-                  <td>{context[idx].id}</td>
+                  <td>{context[idx]}</td>
                   <td>{context[idx].sectionId}</td>
                   <td>{context[idx].name || 'noName'}</td>
                 </tr>
@@ -44,4 +76,10 @@ class ContextForm2 extends React.Component {
   }
 }
 
-export default ContextForm2;
+export default connect(
+  null,
+  {
+    addContextItemRequestAction: addContextItemRequestAction,
+    delContextItemRequestAction: delContextItemRequestAction
+  }
+)(ContextForm2);

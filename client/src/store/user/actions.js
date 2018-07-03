@@ -91,23 +91,28 @@ export const delUserSectionFailureAction = error => ({
   error
 });
 
-export const addProductContextRequestAction = () => ({
-  type: types.ADD_PRODUCT_CONTEXT_REQUEST
+export const addContextItemRequestAction = contextItem => ({
+  type: types.ADD_CONTEXT_ITEM_REQUEST,
+  contextItem
 });
-export const delProductContextRequestAction = () => ({
-  type: types.DEL_PRODUCT_CONTEXT_REQUEST
+export const addContextItemSuccessAction = context => ({
+  type: types.ADD_CONTEXT_ITEM_SUCCESS,
+  context
+});
+export const addContextItemFailureAction = error => ({
+  type: types.ADD_CONTEXT_ITEM_FAILURE,
+  error
 });
 
-export const addCartContextRequestAction = () => ({
-  type: types.ADD_CART_CONTEXT_REQUEST
+export const delContextItemRequestAction = contextItem => ({
+  type: types.DEL_CONTEXT_ITEM_REQUEST,
+  contextItem
 });
-export const delCartContextRequestAction = () => ({
-  type: types.DEL_CART_CONTEXT_REQUEST
+export const delContextItemSuccessAction = context => ({
+  type: types.DEL_CONTEXT_ITEM_SUCCESS,
+  context
 });
-
-export const addCategoryContextRequestAction = () => ({
-  type: types.ADD_CATEGORY_CONTEXT_REQUEST
-});
-export const delCategoryContextRequestAction = () => ({
-  type: types.DEL_CATEGORY_CONTEXT_REQUEST
+export const delContextItemFailureAction = error => ({
+  type: types.DEL_CONTEXT_ITEM_FAILURE,
+  error
 });

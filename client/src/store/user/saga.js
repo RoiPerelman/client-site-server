@@ -20,6 +20,8 @@ export function* rootSaga() {
   );
   yield takeEvery('ADD_USER_SECTION_REQUEST', addSectionToUserRequestSaga);
   yield takeEvery('DEL_USER_SECTION_REQUEST', delSectionToUserRequestSaga);
+  yield takeEvery('ADD_CONTEXT_ITEM_REQUEST', addContextItemRequestSaga);
+  // yield takeEvery('DEL_CONTEXT_ITEM_REQUEST', delContextItemRequestSaga);
 }
 
 export function* signupUserRequestSaga(action) {
@@ -51,10 +53,7 @@ export function* fetchCurrentUserRequestSaga() {
       setAuthorizationHeader(localStorage.RPJWT);
       const user = yield call(api.authorize);
       if (!user.isMulti) {
-        yield loadDynamicYieldRequestSaga(
-          { section: user.defaultSection },
-          "console.log('this is evaled js code')"
-        );
+        yield loadDynamicYieldRequestSaga({ section: user.defaultSection });
       }
       yield put(actions.fetchCurrentUserSuccessAction(user));
     } else {
@@ -78,7 +77,6 @@ export function* loadDynamicYieldRequestSaga(action, jsCode) {
 export function* setMultipleSectionUserSaga(action) {
   try {
     let isMulti = yield call(api.setMultipleSections, action.isMulti);
-    console.log(isMulti);
     yield put(actions.setIsMultipleSectionsUserSuccessAction(isMulti));
   } catch (err) {
     yield put(
@@ -110,6 +108,19 @@ export function* delSectionToUserRequestSaga(action) {
     yield put(
       actions.delUserSectionFailureAction(
         err.response.data.errors || 'failed to del section'
+      )
+    );
+  }
+}
+
+export function* addContextItemRequestSaga(action) {
+  try {
+    const contexts = yield call(api.addContextItem, action.contextItem);
+    yield put(actions.addContextItemSuccessAction(contexts));
+  } catch (err) {
+    yield put(
+      actions.addContextItemFailureAction(
+        err.response.data.errors || 'failed to add contextItem'
       )
     );
   }
