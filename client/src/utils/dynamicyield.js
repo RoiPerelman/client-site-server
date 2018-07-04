@@ -1,5 +1,7 @@
 // synchronously loads the url.
 // we want to load dynamicyield before we continue loading the SPA
+import { history } from '../index';
+
 const loadScript = url => {
   return new Promise((resolve, reject) => {
     const script = document.createElement('script');
@@ -19,7 +21,18 @@ const loadScript = url => {
   });
 };
 
-const loadDynamicYield = async (defaultSection, jsCode) => {
+const getContextType = () => {
+  const cutPathname = pathname => {
+    if (pathname.charAt(0) === '/')
+      return pathname
+        .slice(1)
+        .replace('Page', '')
+        .toUpperCase();
+  };
+  return cutPathname(history.location.pathname);
+};
+
+const loadDynamicYield = async ({ section, contexts, jsCode }) => {
   if (jsCode) {
     try {
       // eslint-disable-next-line
@@ -29,19 +42,31 @@ const loadDynamicYield = async (defaultSection, jsCode) => {
     }
   }
   window.DY = window.DY || {
-    scsec: defaultSection,
+    scsec: section,
     API: (...args) => {
       (window.DY.API.actions = window.DY.API.actions || []).push(args);
     }
   };
-  // window.DY.recommendationContext = {"type":"PRODUCT","data":["1217282-400"]};
-  window.DY.recommendationContext = { type: 'HOMEPAGE', data: [] };
-  await loadScript(
-    `//cdn.dynamicyield.com/api/${defaultSection}/api_dynamic.js`
-  );
-  await loadScript(
-    `//cdn.dynamicyield.com/api/${defaultSection}/api_static.js`
-  );
+  console.log();
+  window.DY.recommendationContext = {
+    type: getContextType() || 'OTHER',
+    data: contexts[getContextType().toLowerCase()] || []
+  };
+  await loadScript(`//cdn.dynamicyield.com/api/${section}/api_dynamic.js`);
+  // manipulate info from api_dynamic
+  apiDynamicDYExpsManipulation();
+  await loadScript(`//cdn.dynamicyield.com/api/${section}/api_static.js`);
 };
 
+const apiDynamicDYExpsManipulation = () => {
+  // eslint-disable-next-line
+
+  // // hook manipulation
+  // DYExps.hooks.beforeSmartExecution = (tagId, tagName) => {
+  //   console.log("beforeTagExecuted", tagId, tagName)
+  // };
+  console.log(
+    'at this point we can manipulate DYExps before static script runs'
+  );
+};
 export default loadDynamicYield;

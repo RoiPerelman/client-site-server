@@ -14,7 +14,7 @@ const initialUserState = {
   sectionId: '',
   token: '',
   isMulti: false,
-  sections: [],
+  sections: {},
   errors: {
     email: '',
     username: '',
@@ -23,7 +23,7 @@ const initialUserState = {
     isMultipleSection: '',
     addSection: '',
     DYRequest: '',
-    contexts: ''
+    addContext: ''
   }
 };
 
@@ -90,29 +90,16 @@ export const userReducer = (state = initialUserState, action = {}) => {
     case types.ADD_USER_SECTION_SUCCESS:
       return {
         ...state,
-        sections: [...state.sections, { sectionId: action.section, name: '' }],
+        sections: {
+          ...state.sections,
+          [action.section.sectionId]: action.section
+        },
         errors: {
           ...state.errors,
           addSection: ''
         }
       };
     case types.ADD_USER_SECTION_FAILURE:
-      return {
-        ...state,
-        errors: {
-          ...state.errors,
-          addSection: action.error
-        }
-      };
-    case types.DEL_USER_SECTION_SUCCESS:
-      return {
-        ...state,
-        sections: state.sections.filter(section => section !== action.section),
-        errors: {
-          ...state.errors,
-          addSection: ''
-        }
-      };
     case types.DEL_USER_SECTION_FAILURE:
       return {
         ...state,
@@ -121,17 +108,36 @@ export const userReducer = (state = initialUserState, action = {}) => {
           addSection: action.error
         }
       };
-    case types.ADD_CONTEXT_ITEM_SUCCESS:
+    case types.DEL_USER_SECTION_SUCCESS:
+      let { [action.section.sectionId]: omit, ...rest } = state.sections;
       return {
         ...state,
-        sections: [...state.sections]
+        sections: rest,
+        errors: {
+          ...state.errors,
+          addSection: ''
+        }
+      };
+    case types.ADD_CONTEXT_ITEM_SUCCESS:
+    case types.DEL_CONTEXT_ITEM_SUCCESS:
+      return {
+        ...state,
+        sections: {
+          ...state.sections,
+          [action.section.sectionId]: action.section
+        },
+        errors: {
+          ...state.errors,
+          addContext: ''
+        }
       };
     case types.ADD_CONTEXT_ITEM_FAILURE:
+    case types.DEL_CONTEXT_ITEM_FAILURE:
       return {
         ...state,
         errors: {
           ...state.errors,
-          contexts: action.error || 'error NOT WORKING'
+          addContext: action.error
         }
       };
     default:

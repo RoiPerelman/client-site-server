@@ -15,7 +15,7 @@ class ContextForm2 extends React.Component {
 
   render() {
     const {
-      sectionsId,
+      section,
       contextType,
       context,
       addContextItemRequestAction,
@@ -29,7 +29,8 @@ class ContextForm2 extends React.Component {
             type="button"
             onClick={() =>
               addContextItemRequestAction({
-                sectionsId: sectionsId,
+                sectionsId: section.id,
+                sectionId: section.sectionId,
                 contextType: contextType,
                 item: this.state.contextItem
               })
@@ -42,7 +43,8 @@ class ContextForm2 extends React.Component {
             type="button"
             onClick={() =>
               delContextItemRequestAction({
-                sectionsId: sectionsId,
+                sectionsId: section.id,
+                sectionId: section.sectionId,
                 contextType: contextType,
                 item: this.state.contextItem
               })

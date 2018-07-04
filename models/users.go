@@ -32,7 +32,7 @@ type User struct {
 	Token           string     `json:"token"`
 	IsAuthenticated bool       `json:"isAuthenticated"`
 	Errors          UserErrors `json:"errors"`
-	Sections        []Section   `json:"sections"`
+	Sections        map[string]Section   `json:"sections"`
 	IsMulti         bool       `json:"isMulti"`
 }
 
@@ -47,56 +47,11 @@ func GetUserByEmail(email string) *User {
 	found := userResults.Next()
 	if found {
 		user := new(User)
-		user.Sections = make([]Section, 0)
 		err = userResults.Scan(&user.Id, &user.Email, &user.Username, &user.PasswordHash, &user.DefaultSection, &user.IsMulti)
 		if err != nil {
 			log.Panic(err)
 		}
-
-		// get Sections info
-		query := fmt.Sprintf("Select id, sectionId FROM sections WHERE sections.userId=%v", user.Id)
-		sectionResults, err := db.Query(query)
-		if err != nil {
-			log.Panic(err)
-		}
-		defer sectionResults.Close()
-
-		for sectionResults.Next() {
-			section := new(Section)
-			section.Contexts.ProductContext = make([]string, 0)
-			section.Contexts.CartContext = make([]string, 0)
-			section.Contexts.CategoryContext = make([]string, 0)
-			err := sectionResults.Scan(&section.Id, &section.SectionId)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			query := fmt.Sprintf("Select type, item FROM contexts WHERE contexts.sectionsId=%v", section.Id)
-			contextResults, err := db.Query(query)
-			if err != nil {
-				log.Panic(err)
-			}
-			defer contextResults.Close()
-
-			for contextResults.Next() {
-				contextItem := new(ContextItem)
-				err := contextResults.Scan(&contextItem.ContextType, &contextItem.Item)
-				if err != nil {
-					log.Fatal(err)
-				}
-
-				switch contextType := contextItem.ContextType; contextType {
-				case "PRODUCT":
-					section.Contexts.ProductContext = append(section.Contexts.ProductContext, contextItem.Item)
-				case "CART":
-					section.Contexts.CartContext = append(section.Contexts.CartContext, contextItem.Item)
-				case "CATEGORY":
-					section.Contexts.CategoryContext = append(section.Contexts.CategoryContext, contextItem.Item)
-				}
-			}
-
-			user.Sections = append(user.Sections, *section)
-		}
+		user.Sections = GetAllUserIdSections(user.Id)
 		return user
 	}
 

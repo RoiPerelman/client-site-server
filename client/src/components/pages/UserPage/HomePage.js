@@ -81,9 +81,4 @@ class HomePage extends React.Component {
   }
 }
 
-// export default connect(
-//   mapStateToProps,
-//   { loadDynamicYieldRequestAction: loadDynamicYieldRequestAction}
-// )(UserPage);
-
 export default HomePage;

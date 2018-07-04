@@ -33,13 +33,9 @@ func MultipleSectionsUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddSectionUser(w http.ResponseWriter, r *http.Request) {
-	var section float64 // create a struct to hold data
+	var section models.Section
 
-	// create a request.body decoder
-	// which has a method Decode that gets a struct to hold the data
 	dec := json.NewDecoder(r.Body)
-	// create writer encoder
-	// which has a method Encode that gets a struct and writes json response
 	enc := json.NewEncoder(w)
 	err := dec.Decode(&section)
 	if err != nil {
@@ -48,7 +44,8 @@ func AddSectionUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if user := r.Context().Value("User"); user != nil {
-		models.AddSection(user.(models.User).Id, int(section))
+		models.AddSection(user.(models.User).Id, section)
+		section = models.GetUserIdSectionBySectionId(user.(models.User).Id, section.SectionId)
 	} else {
 		http.Error(w, "authorize user failed", http.StatusInternalServerError)
 		return
@@ -59,13 +56,9 @@ func AddSectionUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func DelSectionUser(w http.ResponseWriter, r *http.Request) {
-	var section float64 // create a struct to hold data
+	var section models.Section
 
-	// create a request.body decoder
-	// which has a method Decode that gets a struct to hold the data
 	dec := json.NewDecoder(r.Body)
-	// create writer encoder
-	// which has a method Encode that gets a struct and writes json response
 	enc := json.NewEncoder(w)
 	err := dec.Decode(&section)
 	if err != nil {
@@ -74,9 +67,14 @@ func DelSectionUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if user := r.Context().Value("User"); user != nil {
-		models.DelSection(user.(models.User).Id, int(section))
+		if section.SectionId != user.(models.User).DefaultSection {
+			models.DelSection(user.(models.User).Id, section)
+		} else {
+			http.Error(w, "Trying to remove default section!", http.StatusForbidden)
+			return
+		}
 	} else {
-		http.Error(w, "authrize user failed", http.StatusInternalServerError)
+		http.Error(w, "authorize user failed", http.StatusInternalServerError)
 		return
 	}
 

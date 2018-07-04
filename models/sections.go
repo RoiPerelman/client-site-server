@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"log"
 )
 
 type Section struct {
@@ -11,11 +12,11 @@ type Section struct {
 	Contexts Contexts `json:"contexts"`
 }
 
-func AddSection(id int, section int) {
+func AddSection(id int, section Section) {
 	// create user in database
 	query := fmt.Sprintf(
 		`INSERT INTO sections (userId, sectionId)
-			VALUES ('%v', '%v')`, id, section)
+			VALUES ('%v', '%v')`, id, section.SectionId)
 	insert, err := db.Query(query)
 	if err != nil {
 		fmt.Printf("insert err %v\n", err.Error())
@@ -24,10 +25,10 @@ func AddSection(id int, section int) {
 	defer insert.Close()
 }
 
-func DelSection(id int, section int) {
+func DelSection(id int, section Section) {
 	// create user in database
 	query := fmt.Sprintf(
-		`DELETE FROM sections WHERE userId=%v AND sectionId=%v`, id, section)
+		`DELETE FROM sections WHERE userId=%v AND sectionId=%v`, id, section.SectionId)
 	insert, err := db.Query(query)
 	if err != nil {
 		fmt.Printf("delete err %v\n", err.Error())
@@ -51,50 +52,44 @@ func UpdateIsMultipleSectionFeature(id int, isMulti bool) {
 	defer insert.Close()
 }
 
-//func getAllUserIdSections(userId int) []Section {
-//	sections := make([]Section, 0)
-//	query := fmt.Sprintf("Select id, sectionId FROM sections WHERE sections.userId=%v", userId)
-//	sectionResults, err := db.Query(query)
-//	if err != nil {
-//		log.Panic(err)
-//	}
-//	defer sectionResults.Close()
-//
-//	for sectionResults.Next() {
-//		section := new(Section)
-//		section.Contexts.ProductContext = make([]string, 0)
-//		section.Contexts.CartContext = make([]string, 0)
-//		section.Contexts.CategoryContext = make([]string, 0)
-//		err := sectionResults.Scan(&section.Id, &section.SectionId)
-//		if err != nil {
-//			log.Fatal(err)
-//		}
-//
-//		query := fmt.Sprintf("Select type, item FROM contexts WHERE contexts.sectionsId=%v", section.Id)
-//		contextResults, err := db.Query(query)
-//		if err != nil {
-//			log.Panic(err)
-//		}
-//		defer contextResults.Close()
-//
-//		for contextResults.Next() {
-//			contextItem := new(ContextItem)
-//			err := contextResults.Scan(&contextItem.ContextType, &contextItem.Item)
-//			if err != nil {
-//				log.Fatal(err)
-//			}
-//
-//			switch contextType := contextItem.ContextType; contextType {
-//			case "PRODUCT":
-//				section.Contexts.ProductContext = append(section.Contexts.ProductContext, contextItem.Item)
-//			case "CART":
-//				section.Contexts.CartContext = append(section.Contexts.CartContext, contextItem.Item)
-//			case "CATEGORY":
-//				section.Contexts.CategoryContext = append(section.Contexts.CategoryContext, contextItem.Item)
-//			}
-//		}
-//
-//		sections = append(sections, *section)
-//	}
-//	return sections
-//}
+func GetAllUserIdSections(userId int) map[string]Section {
+	sections := make(map[string]Section, 0)
+	query := fmt.Sprintf("Select id, sectionId FROM sections WHERE sections.userId=%v", userId)
+	sectionResults, err := db.Query(query)
+	if err != nil {
+		log.Panic(err)
+	}
+	defer sectionResults.Close()
+
+	for sectionResults.Next() {
+		section := new(Section)
+		err := sectionResults.Scan(&section.Id, &section.SectionId)
+		if err != nil {
+			log.Fatal(err)
+		}
+		section.Contexts = GetContextsBySectionsIdentifier(section.Id)
+
+		sections[section.SectionId] = *section
+	}
+	return sections
+}
+
+func GetUserIdSectionBySectionId(userId int, sectionId string) Section {
+	section := new(Section)
+	query := fmt.Sprintf("Select id, sectionId FROM sections WHERE sections.userId=%v AND sections.sectionId='%v'",
+		userId, sectionId)
+	sectionResult, err := db.Query(query)
+	if err != nil {
+		log.Panic(err)
+	}
+	defer sectionResult.Close()
+	found := sectionResult.Next()
+	if found {
+		err := sectionResult.Scan(&section.Id, &section.SectionId)
+		if err != nil {
+			log.Fatal(err)
+		}
+		section.Contexts = GetContextsBySectionsIdentifier(section.Id)
+	}
+	return *section
+}

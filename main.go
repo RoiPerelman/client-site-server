@@ -16,7 +16,7 @@ func main() {
 
 	var port, staticLocation string
 	flag.StringVar(&port ,"port", "1111", "The Port the App Will Listen To")
-	flag.StringVar(&staticLocation,"static", "./client-site/build", "The Location the App statically serves from")
+	flag.StringVar(&staticLocation,"static", "./client/build", "The Location the App statically serves from")
 	flag.Parse()
 
 	err := godotenv.Load()

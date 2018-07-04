@@ -1,16 +1,20 @@
 package models
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+)
 
 type Contexts struct {
-	ProductContext []string `json:"productContext"`
-	CartContext []string `json:"cartContext"`
-	CategoryContext []string `json:"categoryContext"`
+	ProductContext []string `json:"product"`
+	CartContext []string `json:"cart"`
+	CategoryContext []string `json:"category"`
 }
 
 type ContextItem struct {
 	Id int `json:"id"`
 	SectionsId int `json:"sectionsId"`
+	SectionId string `json:"sectionId"`
 	ContextType string `json:"contextType"`
 	Item string `json:"item"`
 }
@@ -37,4 +41,36 @@ func DelContextTypeItem(contextItem *ContextItem) {
 		panic(err.Error())
 	}
 	defer insert.Close()
+}
+
+func GetContextsBySectionsIdentifier(sectionsIdentifier int) Contexts {
+	contexts := new(Contexts)
+	contexts.ProductContext = make([]string, 0)
+	contexts.CartContext = make([]string, 0)
+	contexts.CategoryContext = make([]string, 0)
+
+	query := fmt.Sprintf("Select type, item FROM contexts WHERE contexts.sectionsId=%v", sectionsIdentifier)
+	contextResults, err := db.Query(query)
+	if err != nil {
+		log.Panic(err)
+	}
+	defer contextResults.Close()
+
+	for contextResults.Next() {
+		contextItem := new(ContextItem)
+		err := contextResults.Scan(&contextItem.ContextType, &contextItem.Item)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		switch contextType := contextItem.ContextType; contextType {
+		case "PRODUCT":
+			contexts.ProductContext = append(contexts.ProductContext, contextItem.Item)
+		case "CART":
+			contexts.CartContext = append(contexts.CartContext, contextItem.Item)
+		case "CATEGORY":
+			contexts.CategoryContext = append(contexts.CategoryContext, contextItem.Item)
+		}
+	}
+	return *contexts
 }

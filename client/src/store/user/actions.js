@@ -47,9 +47,10 @@ export const setIsMultipleSectionsUserFailedAction = error => ({
   error
 });
 
-export const loadDynamicYieldRequestAction = section => ({
+export const loadDynamicYieldRequestAction = ({ section, contexts }) => ({
   type: types.LOAD_DYNAMIC_YIELD_REQUEST_ACTION,
-  section
+  section,
+  contexts
 });
 export const loadDynamicYieldSuccessAction = isDYLoaded => ({
   type: types.LOAD_DYNAMIC_YIELD_SUCCESS_ACTION,
@@ -95,9 +96,9 @@ export const addContextItemRequestAction = contextItem => ({
   type: types.ADD_CONTEXT_ITEM_REQUEST,
   contextItem
 });
-export const addContextItemSuccessAction = context => ({
+export const addContextItemSuccessAction = section => ({
   type: types.ADD_CONTEXT_ITEM_SUCCESS,
-  context
+  section
 });
 export const addContextItemFailureAction = error => ({
   type: types.ADD_CONTEXT_ITEM_FAILURE,
@@ -108,9 +109,9 @@ export const delContextItemRequestAction = contextItem => ({
   type: types.DEL_CONTEXT_ITEM_REQUEST,
   contextItem
 });
-export const delContextItemSuccessAction = context => ({
+export const delContextItemSuccessAction = section => ({
   type: types.DEL_CONTEXT_ITEM_SUCCESS,
-  context
+  section
 });
 export const delContextItemFailureAction = error => ({
   type: types.DEL_CONTEXT_ITEM_FAILURE,

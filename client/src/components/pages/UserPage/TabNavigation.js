@@ -20,9 +20,14 @@ class TabNavigation extends React.Component {
     this.setState({ selectedIdx: idx });
     history.push('/' + pageType);
     if (window.DY && window.DY.API) {
+      const contextType = this.pageTypes[pageType].type;
+      const { sections, activeSection } = this.props;
       window.DY.API('spa', {
-        context: { type: this.pageTypes[pageType].type, data: [] },
-        // context: { type: 'PRODUCT', data: ['1217282-400'] },
+        context: {
+          type: contextType || 'OTHER',
+          data:
+            sections[activeSection].contexts[contextType.toLowerCase()] || []
+        },
         url: window.location.href,
         countAsPageview: true
       });
@@ -67,7 +72,8 @@ class TabNavigation extends React.Component {
 function mapStateToProps(state) {
   return {
     username: state.user.username,
-    activeSection: state.user.activeSection
+    activeSection: state.user.activeSection,
+    sections: state.user.sections
   };
 }
 

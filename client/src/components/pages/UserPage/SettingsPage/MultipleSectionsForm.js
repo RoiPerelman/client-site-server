@@ -19,10 +19,16 @@ class MultipleSectionsForm extends React.Component {
   onChange = e => this.setState({ inputSection: e.target.value });
 
   addSection = () =>
-    this.props.addUserSectionRequestAction(this.state.inputSection);
+    this.props.addUserSectionRequestAction({
+      sectionId: this.state.inputSection,
+      name: undefined
+    });
 
   delSection = () =>
-    this.props.delUserSectionRequestAction(this.state.inputSection);
+    this.props.delUserSectionRequestAction({
+      sectionId: this.state.inputSection,
+      name: undefined
+    });
 
   render() {
     const { isMulti, sections, isMultiError, addSectionError } = this.props;

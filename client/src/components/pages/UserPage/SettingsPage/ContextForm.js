@@ -5,11 +5,7 @@ import { connect } from 'react-redux';
 class ContextsForm extends React.Component {
   render() {
     const { sections, activeSection, defaultSection } = this.props;
-    const section = sections.filter(
-      section =>
-        section.sectionId === activeSection ||
-        section.sectionId === defaultSection
-    )[0];
+    const section = sections[activeSection] || sections[defaultSection];
     return (
       <div className="row">
         <div className="col-6">
@@ -17,21 +13,21 @@ class ContextsForm extends React.Component {
           <br />
           <h3>Product Context</h3>
           <ContextForm2
-            sectionsId={section.id}
+            section={section}
             contextType="PRODUCT"
-            context={section.contexts.productContext}
+            context={section.contexts.product}
           />
           <h3>Cart Context</h3>
           <ContextForm2
-            sectionsId={section.id}
+            section={section}
             contextType="CART"
-            context={section.contexts.cartContext}
+            context={section.contexts.cart}
           />
           <h3>Category Context</h3>
           <ContextForm2
-            sectionsId={section.id}
+            section={section}
             contextType="CATEGORY"
-            context={section.contexts.categoryContext}
+            context={section.contexts.category}
           />
         </div>
       </div>
