@@ -3,7 +3,6 @@ package models
 import (
 	_ "github.com/go-sql-driver/mysql"
 	"database/sql"
-	//_ "github.com/lib/pq"
 	"log"
 	"github.com/roiperelman/client-site-server/utils"
 	"fmt"

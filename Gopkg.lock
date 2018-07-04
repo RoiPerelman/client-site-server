@@ -38,7 +38,7 @@
     "bcrypt",
     "blowfish"
   ]
-  revision = "7f39a6fea4fe9364fb61e1def6a268a51b4f3a06"
+  revision = "a49355c7e3f8fe157a85be2f77e6e269a0f89602"
 
 [[projects]]
   name = "google.golang.org/appengine"
