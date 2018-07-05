@@ -33,14 +33,6 @@ const getContextType = () => {
 };
 
 const loadDynamicYield = async ({ section, contexts, jsCode }) => {
-  if (jsCode) {
-    try {
-      // eslint-disable-next-line
-      eval(jsCode);
-    } catch (e) {
-      console.log(e);
-    }
-  }
   window.DY = window.DY || {
     scsec: section,
     API: (...args) => {
@@ -54,19 +46,27 @@ const loadDynamicYield = async ({ section, contexts, jsCode }) => {
   };
   await loadScript(`//cdn.dynamicyield.com/api/${section}/api_dynamic.js`);
   // manipulate info from api_dynamic
-  apiDynamicDYExpsManipulation();
+  if (jsCode) {
+    try {
+      // eslint-disable-next-line
+      eval(jsCode);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  // apiDynamicDYExpsManipulation();
   await loadScript(`//cdn.dynamicyield.com/api/${section}/api_static.js`);
 };
 
-const apiDynamicDYExpsManipulation = () => {
-  // eslint-disable-next-line
-
-  // // hook manipulation
-  // DYExps.hooks.beforeSmartExecution = (tagId, tagName) => {
-  //   console.log("beforeTagExecuted", tagId, tagName)
-  // };
-  console.log(
-    'at this point we can manipulate DYExps before static script runs'
-  );
-};
+// const apiDynamicDYExpsManipulation = () => {
+//   // eslint-disable-next-line
+//
+//   // // hook manipulation
+//   // DYExps.hooks.beforeSmartExecution = (tagId, tagName) => {
+//   //   console.log("beforeTagExecuted", tagId, tagName)
+//   // };
+//   console.log(
+//     'at this point we can manipulate DYExps before static script runs'
+//   );
+// };
 export default loadDynamicYield;
