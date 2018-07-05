@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import TopNavigation from './TopNavigation';
 import TabNavigation from './TabNavigation';
 import SettingsPage from './SettingsPage';

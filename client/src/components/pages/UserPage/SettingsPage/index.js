@@ -1,12 +1,12 @@
 import React from 'react';
 import MultipleSectionsForm from './MultipleSectionsForm';
 import JSForm from './JSForm';
-import ContextForm from './ContextForm';
+import Contexts from './Contexts';
 
 const Index = () => (
   <div>
-    <ContextForm />
     <MultipleSectionsForm />
+    <Contexts />
     <JSForm />
   </div>
 );

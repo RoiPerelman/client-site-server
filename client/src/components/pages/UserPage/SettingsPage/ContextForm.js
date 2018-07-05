@@ -1,46 +1,84 @@
 import React from 'react';
-import ContextForm2 from './ContextForm2';
+import { Table } from 'reactstrap';
+import {
+  addContextItemRequestAction,
+  delContextItemRequestAction
+} from '../../../../store/user/actions';
 import { connect } from 'react-redux';
 
-class ContextsForm extends React.Component {
+class ContextForm extends React.Component {
+  state = {
+    contextItem: ''
+  };
+
+  onChange = e => this.setState({ contextItem: e.target.value });
+
   render() {
-    const { sections, activeSection, defaultSection } = this.props;
-    const section = sections[activeSection] || sections[defaultSection];
+    const {
+      section,
+      contextType,
+      context,
+      addContextItemRequestAction,
+      delContextItemRequestAction
+    } = this.props;
     return (
-      <div className="row">
-        <div className="col-6">
-          <h3>Contexts for {activeSection || defaultSection}</h3>
-          <br />
-          <h3>Product Context</h3>
-          <ContextForm2
-            section={section}
-            contextType="PRODUCT"
-            context={section.contexts.product}
-          />
-          <h3>Cart Context</h3>
-          <ContextForm2
-            section={section}
-            contextType="CART"
-            context={section.contexts.cart}
-          />
-          <h3>Category Context</h3>
-          <ContextForm2
-            section={section}
-            contextType="CATEGORY"
-            context={section.contexts.category}
-          />
-        </div>
+      <div>
+        <label className="switch">
+          <input type="text" placeholder={`Item`} onChange={this.onChange} />
+          <button
+            type="button"
+            onClick={() =>
+              addContextItemRequestAction({
+                sectionsId: section.id,
+                sectionId: section.sectionId,
+                contextType: contextType,
+                item: this.state.contextItem
+              })
+            }
+            className="small"
+          >
+            Add Item
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              delContextItemRequestAction({
+                sectionsId: section.id,
+                sectionId: section.sectionId,
+                contextType: contextType,
+                item: this.state.contextItem
+              })
+            }
+            className="small"
+          >
+            Del Item
+          </button>
+          <Table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Item</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.keys(context).map(idx => (
+                <tr key={idx}>
+                  <th scope="row">{idx}</th>
+                  <td>{context[idx]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </label>
       </div>
     );
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    activeSection: state.user.activeSection,
-    defaultSection: state.user.defaultSection,
-    sections: state.user.sections
-  };
-}
-
-export default connect(mapStateToProps)(ContextsForm);
+export default connect(
+  null,
+  {
+    addContextItemRequestAction: addContextItemRequestAction,
+    delContextItemRequestAction: delContextItemRequestAction
+  }
+)(ContextForm);

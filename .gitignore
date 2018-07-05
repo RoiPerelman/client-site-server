@@ -10,3 +10,4 @@ client/node_modules
 
 #env files
 .env
+.env_prod

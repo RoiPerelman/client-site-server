@@ -1,5 +1,5 @@
 import React from 'react';
-import { loadDynamicYieldRequestAction } from '../../store/user/actions';
+import { loadDynamicYieldRequestAction } from '../../../store/user/actions';
 import { connect } from 'react-redux';
 
 class ChooseSectionPage extends React.Component {

@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Route } from 'react-router-dom';
 import Loader from 'react-loader';
-import ChooseSectionPage from '../pages/ChooseSectionPage';
+import ChooseSectionPage from '../pages/UserPage/ChooseSectionPage';
 const DYUserRoute = ({
   isDYLoading,
   isDYLoaded,
