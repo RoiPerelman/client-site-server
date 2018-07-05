@@ -23,27 +23,25 @@ func AddContextTypeItem(contextItem *ContextItem) {
 	query := fmt.Sprintf(
 		`INSERT INTO contexts (sectionsId, type, item) VALUES ('%v', '%v', '%v')`,
 		contextItem.SectionsId, contextItem.ContextType, contextItem.Item)
-	insert, err := db.Query(query)
+	_, err := db.Exec(query)
 	if err != nil {
 		fmt.Printf("insert err %v\n", err.Error())
 		panic(err.Error())
 	}
-	defer insert.Close()
 }
 
 func DelContextTypeItem(contextItem *ContextItem) {
 	query := fmt.Sprintf(
 		`DELETE FROM contexts WHERE sectionsId=%v AND type='%v' And item='%v'`,
 		contextItem.SectionsId, contextItem.ContextType, contextItem.Item)
-	insert, err := db.Query(query)
+	_, err := db.Exec(query)
 	if err != nil {
 		fmt.Printf("insert err %v\n", err.Error())
 		panic(err.Error())
 	}
-	defer insert.Close()
 }
 
-func GetContextsBySectionsIdentifier(sectionsIdentifier int) Contexts {
+func GetContextsBySectionsId(sectionsIdentifier int) Contexts {
 	contexts := new(Contexts)
 	contexts.ProductContext = make([]string, 0)
 	contexts.CartContext = make([]string, 0)

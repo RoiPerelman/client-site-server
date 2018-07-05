@@ -1,10 +1,10 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import TopNavigation from './TopNavigation';
 import TabNavigation from './TabNavigation';
 import SettingsPage from './SettingsPage';
 import { Route, Switch } from 'react-router-dom';
 import DYUserRoute from '../../routes/DYUserRoute';
-import HomePage from './HomePage';
+import Page from './Page';
 
 class UserPage extends React.Component {
   render() {
@@ -21,7 +21,7 @@ class UserPage extends React.Component {
               return <SettingsPage />;
             }}
           />
-          <DYUserRoute path="/" component={HomePage} />
+          <DYUserRoute path="/" component={Page} />
         </Switch>
       </div>
     );

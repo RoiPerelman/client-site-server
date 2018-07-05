@@ -14,10 +14,7 @@ export function* rootSaga() {
     'SET_MULTIPLE_SECTION_USER_REQUEST',
     setMultipleSectionUserSaga
   );
-  yield takeEvery(
-    'LOAD_DYNAMIC_YIELD_REQUEST_ACTION',
-    loadDynamicYieldRequestSaga
-  );
+  yield takeEvery('LOAD_DYNAMIC_YIELD_REQUEST', loadDynamicYieldRequestSaga);
   yield takeEvery('ADD_USER_SECTION_REQUEST', addSectionToUserRequestSaga);
   yield takeEvery('DEL_USER_SECTION_REQUEST', delSectionToUserRequestSaga);
   yield takeEvery('ADD_CONTEXT_ITEM_REQUEST', addContextItemRequestSaga);

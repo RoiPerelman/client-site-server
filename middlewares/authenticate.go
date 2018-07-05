@@ -28,24 +28,23 @@ func Authenticate(next http.Handler) http.Handler {
 			}
 			return []byte(secret), nil
 		})
-
 		if err != nil {
 			user.Errors.Server = err.Error()
 			user.IsAuthenticated = false
 			w.WriteHeader(http.StatusUnauthorized)
 		} else {
 			if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-				user.Username = claims["username"].(string)
-				user.Email = claims["email"].(string)
-
+				user.Id = int(claims["id"].(float64))
 				// check if user exists in db
-				emailUser := models.GetUserByEmail(user.Email)
-				if emailUser != nil && emailUser.Username == user.Username {
+				emailUser := models.GetUserById(user.Id)
+				if emailUser != nil {
 					user.IsAuthenticated = true
 					user.Id = emailUser.Id
 					user.IsMulti = emailUser.IsMulti
 					user.DefaultSection = emailUser.DefaultSection
 					user.Sections = emailUser.Sections
+					user.Username = emailUser.Username
+					user.Email = emailUser.Email
 				} else {
 					w.WriteHeader(http.StatusUnauthorized)
 				}

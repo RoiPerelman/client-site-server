@@ -16,11 +16,10 @@ func AuthorizeUser(	w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		// Write the output
-		w.Header().Set("content-type", "application/json")
+		w.Header().Set("Content-Type", "application/json")
 		w.Write(output)
 	} else {
-		http.Error(w, "authrize user failed", http.StatusInternalServerError)
+		http.Error(w, "authorize user failed", http.StatusInternalServerError)
 		return
 	}
-
 }

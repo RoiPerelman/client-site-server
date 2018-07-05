@@ -48,16 +48,16 @@ export const setIsMultipleSectionsUserFailedAction = error => ({
 });
 
 export const loadDynamicYieldRequestAction = ({ section, contexts }) => ({
-  type: types.LOAD_DYNAMIC_YIELD_REQUEST_ACTION,
+  type: types.LOAD_DYNAMIC_YIELD_REQUEST,
   section,
   contexts
 });
 export const loadDynamicYieldSuccessAction = isDYLoaded => ({
-  type: types.LOAD_DYNAMIC_YIELD_SUCCESS_ACTION,
+  type: types.LOAD_DYNAMIC_YIELD_SUCCESS,
   isDYLoaded
 });
 export const loadDynamicYieldFailureAction = error => ({
-  type: types.LOAD_DYNAMIC_YIELD_FAILURE_ACTION,
+  type: types.LOAD_DYNAMIC_YIELD_FAILURE,
   error
 });
 

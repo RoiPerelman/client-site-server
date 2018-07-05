@@ -62,18 +62,18 @@ export const userReducer = (state = initialUserState, action = {}) => {
           isMultipleSection: action.error
         }
       };
-    case types.LOAD_DYNAMIC_YIELD_REQUEST_ACTION:
+    case types.LOAD_DYNAMIC_YIELD_REQUEST:
       return {
         ...state,
         isDYLoading: true
       };
-    case types.LOAD_DYNAMIC_YIELD_SUCCESS_ACTION:
+    case types.LOAD_DYNAMIC_YIELD_SUCCESS:
       return {
         ...state,
         isDYLoaded: action.isDYLoaded,
         isDYLoading: false
       };
-    case types.LOAD_DYNAMIC_YIELD_FAILURE_ACTION:
+    case types.LOAD_DYNAMIC_YIELD_FAILURE:
       return {
         ...state,
         errors: {

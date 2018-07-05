@@ -12,39 +12,40 @@ type Section struct {
 	Contexts Contexts `json:"contexts"`
 }
 
-func AddSection(id int, section Section) {
+func AddSection(userId int, section Section) int{
 	// create user in database
-	query := fmt.Sprintf(
+	insert, err := db.Exec(
 		`INSERT INTO sections (userId, sectionId)
-			VALUES ('%v', '%v')`, id, section.SectionId)
-	insert, err := db.Query(query)
+			VALUES (?, ?)`, userId, section.SectionId)
 	if err != nil {
 		fmt.Printf("insert err %v\n", err.Error())
 		panic(err.Error())
 	}
-	defer insert.Close()
+	id, err := insert.LastInsertId()
+	if err != nil {
+		fmt.Printf("insert err %v\n", err.Error())
+		panic(err.Error())
+	}
+	return int(id)
 }
 
 func DelSection(id int, section Section) {
 	// create user in database
-	query := fmt.Sprintf(
-		`DELETE FROM sections WHERE userId=%v AND sectionId=%v`, id, section.SectionId)
-	insert, err := db.Query(query)
+	_, err := db.Exec(
+		`DELETE FROM sections WHERE userId=? AND sectionId=?`, id, section.SectionId)
 	if err != nil {
 		fmt.Printf("delete err %v\n", err.Error())
 		panic(err.Error())
 	}
-	defer insert.Close()
 }
 
 func UpdateIsMultipleSectionFeature(id int, isMulti bool) {
 	// create user in database
-	query := fmt.Sprintf(
+	insert, err := db.Query(
 		`UPDATE users
-			SET isMultipleSection=%v
-			WHERE id='%v'
+			SET isMultipleSection=?
+			WHERE id=?
 		`, isMulti, id)
-	insert, err := db.Query(query)
 	if err != nil {
 		fmt.Printf("update err %v\n", err.Error())
 		panic(err.Error())
@@ -54,8 +55,7 @@ func UpdateIsMultipleSectionFeature(id int, isMulti bool) {
 
 func GetAllUserIdSections(userId int) map[string]Section {
 	sections := make(map[string]Section, 0)
-	query := fmt.Sprintf("Select id, sectionId FROM sections WHERE sections.userId=%v", userId)
-	sectionResults, err := db.Query(query)
+	sectionResults, err := db.Query("Select id, sectionId FROM sections WHERE sections.userId=?", userId)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -67,18 +67,16 @@ func GetAllUserIdSections(userId int) map[string]Section {
 		if err != nil {
 			log.Fatal(err)
 		}
-		section.Contexts = GetContextsBySectionsIdentifier(section.Id)
+		section.Contexts = GetContextsBySectionsId(section.Id)
 
 		sections[section.SectionId] = *section
 	}
 	return sections
 }
 
-func GetUserIdSectionBySectionId(userId int, sectionId string) Section {
+func GetUserSectionBySectionsId(sectionsId int) Section {
 	section := new(Section)
-	query := fmt.Sprintf("Select id, sectionId FROM sections WHERE sections.userId=%v AND sections.sectionId='%v'",
-		userId, sectionId)
-	sectionResult, err := db.Query(query)
+	sectionResult, err := db.Query("Select id, sectionId FROM sections WHERE sections.id=?", sectionsId)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -89,7 +87,7 @@ func GetUserIdSectionBySectionId(userId int, sectionId string) Section {
 		if err != nil {
 			log.Fatal(err)
 		}
-		section.Contexts = GetContextsBySectionsIdentifier(section.Id)
+		section.Contexts = GetContextsBySectionsId(section.Id)
 	}
 	return *section
 }

@@ -44,8 +44,8 @@ func AddSectionUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if user := r.Context().Value("User"); user != nil {
-		models.AddSection(user.(models.User).Id, section)
-		section = models.GetUserIdSectionBySectionId(user.(models.User).Id, section.SectionId)
+		sectionsId := models.AddSection(user.(models.User).Id, section)
+		section = models.GetUserSectionBySectionsId(sectionsId)
 	} else {
 		http.Error(w, "authorize user failed", http.StatusInternalServerError)
 		return

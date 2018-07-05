@@ -36,10 +36,30 @@ type User struct {
 	IsMulti         bool       `json:"isMulti"`
 }
 
+func GetUserById(id int) *User {
+	// get User info
+	userResults, err := db.Query("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection FROM users WHERE id=?", id)
+	if err != nil {
+		log.Panic(err)
+	}
+	defer userResults.Close()
+	found := userResults.Next()
+	if found {
+		user := new(User)
+		err = userResults.Scan(&user.Id, &user.Email, &user.Username, &user.PasswordHash, &user.DefaultSection, &user.IsMulti)
+		if err != nil {
+			log.Panic(err)
+		}
+		user.Sections = GetAllUserIdSections(user.Id)
+		return user
+	}
+
+	return nil
+}
+
 func GetUserByEmail(email string) *User {
 	// get User info
-	query := fmt.Sprintf("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection FROM users WHERE email='%v'", email)
-	userResults, err := db.Query(query)
+	userResults, err := db.Query("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection FROM users WHERE email=?", email)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -59,8 +79,7 @@ func GetUserByEmail(email string) *User {
 }
 
 func GetUserByUsername(username string) *User {
-	query := fmt.Sprintf("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection FROM users WHERE username='%v'", username)
-	results, err := db.Query(query)
+	results, err := db.Query("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection FROM users WHERE username=?", username)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -90,10 +109,9 @@ func (user *User) Insert() (int, bool) {
 	}
 
 	// create user in database
-	query := fmt.Sprintf(
+	insert, err := db.Exec(
 		`INSERT INTO users (email, username, passwordHash, DefaultSection)
-			VALUES ('%v', '%v', '%v', '%v')`, user.Email, user.Username, user.PasswordHash, user.DefaultSection)
-	insert, err := db.Exec(query)
+			VALUES (?, ?, ?, ?)`, user.Email, user.Username, user.PasswordHash, user.DefaultSection)
 	if err != nil {
 		fmt.Printf("insert err %v\n", err.Error())
 		panic(err.Error())
@@ -104,10 +122,9 @@ func (user *User) Insert() (int, bool) {
 		panic(err.Error())
 	}
 	//create section in database
-	query = fmt.Sprintf(
+	insert, err = db.Exec(
 		`INSERT INTO sections (userId, sectionId)
-			VALUES ('%v', '%v')`, id, user.DefaultSection)
-	insert, err = db.Exec(query)
+			VALUES (?, ?)`, id, user.DefaultSection)
 	if err != nil {
 		fmt.Printf("insert err %v\n", err.Error())
 		panic(err.Error())
