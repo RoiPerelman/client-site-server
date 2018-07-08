@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"net/http"
+	"encoding/json"
 	"github.com/roiperelman/client-site-server/models"
 	"io/ioutil"
-	"encoding/json"
+	"net/http"
 )
 
 const secret = "secret string"

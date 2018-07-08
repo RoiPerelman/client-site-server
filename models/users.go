@@ -23,21 +23,20 @@ type UserErrors struct {
 }
 
 type User struct {
-	Id              int        `json:"id"`
-	Email           string     `json:"email"`
-	Username        string     `json:"username"`
-	Password        string     `json:"password"`
-	DefaultSection  string     `json:"defaultSection"`
-	PasswordHash    string     `json:"-"`
-	Token           string     `json:"token"`
-	IsAuthenticated bool       `json:"isAuthenticated"`
-	Errors          UserErrors `json:"errors"`
-	Sections        map[string]Section   `json:"sections"`
-	IsMulti         bool       `json:"isMulti"`
+	Id              int                `json:"id"`
+	Email           string             `json:"email"`
+	Username        string             `json:"username"`
+	Password        string             `json:"password"`
+	DefaultSection  string             `json:"defaultSection"`
+	PasswordHash    string             `json:"-"`
+	Token           string             `json:"token"`
+	IsAuthenticated bool               `json:"isAuthenticated"`
+	Errors          UserErrors         `json:"errors"`
+	Sections        map[string]Section `json:"sections"`
+	IsMulti         bool               `json:"isMulti"`
 }
 
 func GetUserById(id int) *User {
-	// get User info
 	userResults, err := db.Query("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection FROM users WHERE id=?", id)
 	if err != nil {
 		log.Panic(err)
@@ -58,7 +57,6 @@ func GetUserById(id int) *User {
 }
 
 func GetUserByEmail(email string) *User {
-	// get User info
 	userResults, err := db.Query("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection FROM users WHERE email=?", email)
 	if err != nil {
 		log.Panic(err)
@@ -79,17 +77,22 @@ func GetUserByEmail(email string) *User {
 }
 
 func GetUserByUsername(username string) *User {
-	results, err := db.Query("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection FROM users WHERE username=?", username)
+	userResults, err := db.Query("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection FROM users WHERE username=?", username)
 	if err != nil {
 		log.Panic(err)
 	}
-	defer results.Close()
-	found := results.Next()
+	defer userResults.Close()
+	found := userResults.Next()
 	if found {
 		user := new(User)
-		err = results.Scan(&user.Id, &user.Email, &user.Username, &user.PasswordHash, &user.DefaultSection, &user.IsMulti)
+		err = userResults.Scan(&user.Id, &user.Email, &user.Username, &user.PasswordHash, &user.DefaultSection, &user.IsMulti)
+		if err != nil {
+			log.Panic(err)
+		}
+		user.Sections = GetAllUserIdSections(user.Id)
 		return user
 	}
+
 	return nil
 }
 
@@ -135,7 +138,7 @@ func (user *User) Insert() (int, bool) {
 
 func (user *User) AddToken(secret string) error {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id":  user.Id,
+		"id":        user.Id,
 		"username":  user.Username,
 		"email":     user.Email,
 		"timestamp": time.Now().Unix(),

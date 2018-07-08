@@ -1,11 +1,11 @@
 package models
 
 import (
-	_ "github.com/go-sql-driver/mysql"
 	"database/sql"
-	"log"
-	"github.com/roiperelman/client-site-server/utils"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/roiperelman/client-site-server/utils"
+	"log"
 )
 
 var db *sql.DB

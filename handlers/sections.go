@@ -1,9 +1,9 @@
 package handlers
 
 import (
-"net/http"
-"encoding/json"
+	"encoding/json"
 	"github.com/roiperelman/client-site-server/models"
+	"net/http"
 )
 
 func MultipleSectionsUser(w http.ResponseWriter, r *http.Request) {

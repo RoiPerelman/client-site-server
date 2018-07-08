@@ -6,51 +6,10 @@ import (
 )
 
 type Section struct {
-	Id int `json:"id"`
-	SectionId string `json:"sectionId"`
-	Name string `json:"name"`
-	Contexts Contexts `json:"contexts"`
-}
-
-func AddSection(userId int, section Section) int{
-	// create user in database
-	insert, err := db.Exec(
-		`INSERT INTO sections (userId, sectionId)
-			VALUES (?, ?)`, userId, section.SectionId)
-	if err != nil {
-		fmt.Printf("insert err %v\n", err.Error())
-		panic(err.Error())
-	}
-	id, err := insert.LastInsertId()
-	if err != nil {
-		fmt.Printf("insert err %v\n", err.Error())
-		panic(err.Error())
-	}
-	return int(id)
-}
-
-func DelSection(id int, section Section) {
-	// create user in database
-	_, err := db.Exec(
-		`DELETE FROM sections WHERE userId=? AND sectionId=?`, id, section.SectionId)
-	if err != nil {
-		fmt.Printf("delete err %v\n", err.Error())
-		panic(err.Error())
-	}
-}
-
-func UpdateIsMultipleSectionFeature(id int, isMulti bool) {
-	// create user in database
-	insert, err := db.Query(
-		`UPDATE users
-			SET isMultipleSection=?
-			WHERE id=?
-		`, isMulti, id)
-	if err != nil {
-		fmt.Printf("update err %v\n", err.Error())
-		panic(err.Error())
-	}
-	defer insert.Close()
+	Id        int      `json:"id"`
+	SectionId string   `json:"sectionId"`
+	Name      string   `json:"name"`
+	Contexts  Contexts `json:"contexts"`
 }
 
 func GetAllUserIdSections(userId int) map[string]Section {
@@ -90,4 +49,45 @@ func GetUserSectionBySectionsId(sectionsId int) Section {
 		section.Contexts = GetContextsBySectionsId(section.Id)
 	}
 	return *section
+}
+
+func AddSection(userId int, section Section) int {
+	// create user in database
+	insert, err := db.Exec(
+		`INSERT INTO sections (userId, sectionId)
+			VALUES (?, ?)`, userId, section.SectionId)
+	if err != nil {
+		fmt.Printf("insert err %v\n", err.Error())
+		panic(err.Error())
+	}
+	id, err := insert.LastInsertId()
+	if err != nil {
+		fmt.Printf("insert err %v\n", err.Error())
+		panic(err.Error())
+	}
+	return int(id)
+}
+
+func DelSection(id int, section Section) {
+	// create user in database
+	_, err := db.Exec(
+		`DELETE FROM sections WHERE userId=? AND sectionId=?`, id, section.SectionId)
+	if err != nil {
+		fmt.Printf("delete err %v\n", err.Error())
+		panic(err.Error())
+	}
+}
+
+func UpdateIsMultipleSectionFeature(id int, isMulti bool) {
+	// create user in database
+	insert, err := db.Query(
+		`UPDATE users
+			SET isMultipleSection=?
+			WHERE id=?
+		`, isMulti, id)
+	if err != nil {
+		fmt.Printf("update err %v\n", err.Error())
+		panic(err.Error())
+	}
+	defer insert.Close()
 }

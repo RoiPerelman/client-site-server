@@ -6,39 +6,17 @@ import (
 )
 
 type Contexts struct {
-	ProductContext []string `json:"product"`
-	CartContext []string `json:"cart"`
+	ProductContext  []string `json:"product"`
+	CartContext     []string `json:"cart"`
 	CategoryContext []string `json:"category"`
 }
 
 type ContextItem struct {
-	Id int `json:"id"`
-	SectionsId int `json:"sectionsId"`
-	SectionId string `json:"sectionId"`
+	Id          int    `json:"id"`
+	SectionsId  int    `json:"sectionsId"`
+	SectionId   string `json:"sectionId"`
 	ContextType string `json:"contextType"`
-	Item string `json:"item"`
-}
-
-func AddContextTypeItem(contextItem *ContextItem) {
-	query := fmt.Sprintf(
-		`INSERT INTO contexts (sectionsId, type, item) VALUES ('%v', '%v', '%v')`,
-		contextItem.SectionsId, contextItem.ContextType, contextItem.Item)
-	_, err := db.Exec(query)
-	if err != nil {
-		fmt.Printf("insert err %v\n", err.Error())
-		panic(err.Error())
-	}
-}
-
-func DelContextTypeItem(contextItem *ContextItem) {
-	query := fmt.Sprintf(
-		`DELETE FROM contexts WHERE sectionsId=%v AND type='%v' And item='%v'`,
-		contextItem.SectionsId, contextItem.ContextType, contextItem.Item)
-	_, err := db.Exec(query)
-	if err != nil {
-		fmt.Printf("insert err %v\n", err.Error())
-		panic(err.Error())
-	}
+	Item        string `json:"item"`
 }
 
 func GetContextsBySectionsId(sectionsIdentifier int) Contexts {
@@ -71,4 +49,26 @@ func GetContextsBySectionsId(sectionsIdentifier int) Contexts {
 		}
 	}
 	return *contexts
+}
+
+func AddContextTypeItem(contextItem *ContextItem) {
+	query := fmt.Sprintf(
+		`INSERT INTO contexts (sectionsId, type, item) VALUES ('%v', '%v', '%v')`,
+		contextItem.SectionsId, contextItem.ContextType, contextItem.Item)
+	_, err := db.Exec(query)
+	if err != nil {
+		fmt.Printf("insert err %v\n", err.Error())
+		panic(err.Error())
+	}
+}
+
+func DelContextTypeItem(contextItem *ContextItem) {
+	query := fmt.Sprintf(
+		`DELETE FROM contexts WHERE sectionsId=%v AND type='%v' And item='%v'`,
+		contextItem.SectionsId, contextItem.ContextType, contextItem.Item)
+	_, err := db.Exec(query)
+	if err != nil {
+		fmt.Printf("insert err %v\n", err.Error())
+		panic(err.Error())
+	}
 }

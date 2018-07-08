@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"net/http"
+	"encoding/json"
 	"github.com/roiperelman/client-site-server/models"
 	"golang.org/x/crypto/bcrypt"
-	"encoding/json"
+	"net/http"
 )
 
 func LoginUser(w http.ResponseWriter, r *http.Request) {

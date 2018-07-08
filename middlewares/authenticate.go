@@ -1,12 +1,12 @@
 package middlewares
 
 import (
-	"net/http"
 	"context"
-	"strings"
-	"github.com/dgrijalva/jwt-go"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/roiperelman/client-site-server/models"
+	"net/http"
+	"strings"
 )
 
 const secret = "secret string"

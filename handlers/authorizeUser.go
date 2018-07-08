@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 )
 
-func AuthorizeUser(	w http.ResponseWriter, r *http.Request) {
+func AuthorizeUser(w http.ResponseWriter, r *http.Request) {
 	//Get data from context
 	if user := r.Context().Value("User"); user != nil {
 		w.WriteHeader(http.StatusOK)

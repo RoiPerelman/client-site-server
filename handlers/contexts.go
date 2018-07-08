@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"net/http"
 	"encoding/json"
 	"github.com/roiperelman/client-site-server/models"
+	"net/http"
 )
 
 func AddContextItem(w http.ResponseWriter, r *http.Request) {

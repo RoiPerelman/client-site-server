@@ -1,22 +1,22 @@
 package main
 
 import (
-	"net/http"
-	"github.com/gorilla/mux"
-	"github.com/roiperelman/client-site-server/models"
-	"github.com/roiperelman/client-site-server/handlers"
-	"github.com/roiperelman/client-site-server/utils"
-	"github.com/joho/godotenv"
 	"flag"
-	"log"
+	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
+	"github.com/roiperelman/client-site-server/handlers"
 	"github.com/roiperelman/client-site-server/middlewares"
+	"github.com/roiperelman/client-site-server/models"
+	"github.com/roiperelman/client-site-server/utils"
+	"log"
+	"net/http"
 )
 
 func main() {
 
 	var port, staticLocation string
-	flag.StringVar(&port ,"port", "1111", "The Port the App Will Listen To")
-	flag.StringVar(&staticLocation,"static", "./client/build", "The Location the App statically serves from")
+	flag.StringVar(&port, "port", "1111", "The Port the App Will Listen To")
+	flag.StringVar(&staticLocation, "static", "./client/build", "The Location the App statically serves from")
 	flag.Parse()
 
 	err := godotenv.Load()
@@ -42,7 +42,7 @@ func main() {
 	r.PathPrefix("/static").Handler(http.FileServer(http.Dir(staticLocation)))
 	r.PathPrefix("/").HandlerFunc(staticFileHandler(staticLocation + "/index.html"))
 
-	http.ListenAndServe(":" + utils.GetEnv("PORT", port), r)
+	http.ListenAndServe(":"+utils.GetEnv("PORT", port), r)
 }
 
 func staticFileHandler(filePath string) func(w http.ResponseWriter, r *http.Request) {
@@ -51,4 +51,3 @@ func staticFileHandler(filePath string) func(w http.ResponseWriter, r *http.Requ
 	}
 	return http.HandlerFunc(fn)
 }
-
