@@ -1,6 +1,17 @@
 import * as types from './types';
 import { history } from '../../index';
 
+const clearErrors = {
+  email: '',
+  username: '',
+  password: '',
+  login: '',
+  isMulti: '',
+  section: '',
+  DYRequest: '',
+  addContext: ''
+};
+
 const initialUserState = {
   email: '',
   username: '',
@@ -15,51 +26,45 @@ const initialUserState = {
   token: '',
   isMulti: false,
   sections: {},
-  errors: {
-    email: '',
-    username: '',
-    password: '',
-    server: '',
-    isMultipleSection: '',
-    addSection: '',
-    DYRequest: '',
-    addContext: ''
-  }
+  errors: clearErrors
 };
 
 export const userReducer = (state = initialUserState, action = {}) => {
   switch (action.type) {
     case types.SIGNUP_USER_FAILURE:
-    case types.LOGIN_USER_FAILURE:
       return { ...state, errors: action.errors || state.errors };
+    case types.LOGIN_USER_FAILURE:
+      return {
+        ...state,
+        errors: {
+          ...state.errors,
+          login: action.error
+        }
+      };
     case types.FETCH_USER_FAILURE:
       return {
         ...state,
-        isAuthenticated: action.isAuthenticated,
+        isAuthenticated: false,
         isLoaded: true
       };
     case types.FETCH_USER_SUCCESS:
-      return { ...state, ...action.user, isLoaded: true };
+      return { ...state, ...action.user, errors: clearErrors, isLoaded: true };
     case types.LOGOUT_USER:
       delete localStorage.RPJWT;
       history.push('/');
       window.location.reload();
       return state;
-    case types.SET_MULTIPLE_SECTION_USER_SUCCESS:
+    case types.SET_MULTI_SECTION_SUCCESS:
       return {
         ...state,
-        isMulti: action.isMulti,
-        errors: {
-          ...state.errors,
-          isMultipleSection: ''
-        }
+        isMulti: action.isMulti
       };
-    case types.SET_MULTIPLE_SECTION_USER_FAILURE:
+    case types.SET_MULTI_SECTION_FAILURE:
       return {
         ...state,
         errors: {
           ...state.errors,
-          isMultipleSection: action.error
+          isMulti: action.error
         }
       };
     case types.LOAD_DYNAMIC_YIELD_REQUEST:
@@ -87,6 +92,15 @@ export const userReducer = (state = initialUserState, action = {}) => {
         ...state,
         activeSection: action.section
       };
+    case types.ADD_USER_SECTION_FAILURE:
+    case types.DEL_USER_SECTION_FAILURE:
+      return {
+        ...state,
+        errors: {
+          ...state.errors,
+          section: action.error
+        }
+      };
     case types.ADD_USER_SECTION_SUCCESS:
       return {
         ...state,
@@ -96,16 +110,7 @@ export const userReducer = (state = initialUserState, action = {}) => {
         },
         errors: {
           ...state.errors,
-          addSection: ''
-        }
-      };
-    case types.ADD_USER_SECTION_FAILURE:
-    case types.DEL_USER_SECTION_FAILURE:
-      return {
-        ...state,
-        errors: {
-          ...state.errors,
-          addSection: action.error
+          section: ''
         }
       };
     case types.DEL_USER_SECTION_SUCCESS:

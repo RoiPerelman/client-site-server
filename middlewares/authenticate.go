@@ -29,9 +29,8 @@ func Authenticate(next http.Handler) http.Handler {
 			return []byte(secret), nil
 		})
 		if err != nil {
-			user.Errors.Server = err.Error()
-			user.IsAuthenticated = false
-			w.WriteHeader(http.StatusUnauthorized)
+			http.Error(w, "authorization failed", http.StatusUnauthorized)
+			return
 		} else {
 			if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 				user.Id = int(claims["id"].(float64))
@@ -46,11 +45,12 @@ func Authenticate(next http.Handler) http.Handler {
 					user.Username = emailUser.Username
 					user.Email = emailUser.Email
 				} else {
-					w.WriteHeader(http.StatusUnauthorized)
+					http.Error(w, "user doesnt exists", http.StatusUnauthorized)
+					return
 				}
 			} else {
-				user.IsAuthenticated = false
-				w.WriteHeader(http.StatusUnauthorized)
+				http.Error(w, "user doesnt exists", http.StatusUnauthorized)
+				return
 			}
 		}
 

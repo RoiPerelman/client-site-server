@@ -26,23 +26,18 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	if dbUser != nil {
 		err = bcrypt.CompareHashAndPassword([]byte(dbUser.PasswordHash), []byte(user.Password))
 		if err != nil {
-			user.IsAuthenticated = false
-			user.Errors.Server = "Error: Invalid Email/password combination!"
-			w.WriteHeader(http.StatusUnauthorized)
+			http.Error(w, "Error: Invalid Email/password combination!", http.StatusUnauthorized)
+			return
 		} else {
-			user.Username = dbUser.Username
-			user.Id = dbUser.Id
-			user.DefaultSection = dbUser.DefaultSection
-			user.AddToken(secret)
-			user.IsAuthenticated = true
+			dbUser.AddToken(secret)
+			dbUser.IsAuthenticated = true
 		}
 	} else {
-		user.IsAuthenticated = false
-		user.Errors.Server = "Error: Invalid Email/password combination!"
-		w.WriteHeader(http.StatusUnauthorized)
+		http.Error(w, "Error: Invalid Email/password combination!", http.StatusUnauthorized)
+		return
 	}
 
 	//user.Password = ""
 	w.Header().Set("content-type", "application/json")
-	enc.Encode(user)
+	enc.Encode(dbUser)
 }

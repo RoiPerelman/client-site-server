@@ -1,7 +1,7 @@
 import React from 'react';
 import { Collapse, Table } from 'reactstrap';
 import {
-  setIsMultipleSectionsUserRequestAction,
+  setIsMultiSectionsRequestAction,
   addUserSectionRequestAction,
   delUserSectionRequestAction
 } from '../../../../store/user/actions';
@@ -20,14 +20,12 @@ class MultipleSectionsForm extends React.Component {
 
   addSection = () =>
     this.props.addUserSectionRequestAction({
-      sectionId: this.state.inputSection,
-      name: undefined
+      sectionId: this.state.inputSection
     });
 
   delSection = () =>
     this.props.delUserSectionRequestAction({
-      sectionId: this.state.inputSection,
-      name: undefined
+      sectionId: this.state.inputSection
     });
 
   render() {
@@ -89,15 +87,15 @@ function mapStateToProps(state) {
   return {
     isMulti: state.user.isMulti,
     sections: state.user.sections,
-    isMultiError: state.user.errors.isMultipleSection,
-    addSectionError: state.user.errors.addSection
+    isMultiError: state.user.errors.isMulti,
+    addSectionError: state.user.errors.section
   };
 }
 
 export default connect(
   mapStateToProps,
   {
-    setIsMultipleSectionsUserRequest: setIsMultipleSectionsUserRequestAction,
+    setIsMultipleSectionsUserRequest: setIsMultiSectionsRequestAction,
     addUserSectionRequestAction: addUserSectionRequestAction,
     delUserSectionRequestAction: delUserSectionRequestAction
   }

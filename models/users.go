@@ -6,20 +6,23 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"time"
+	"encoding/json"
 )
-
-type Reasons struct {
-	Email        string
-	Username     string
-	PasswordHash string
-}
 
 type UserErrors struct {
 	Email            string `json:"email"`
 	Username         string `json:"username"`
 	Password         string `json:"password"`
-	Server           string `json:"server"`
+	Login            string `json:"login"`
 	MultipleSections string `json:"multipleSections"`
+}
+
+func (e UserErrors) Error() string {
+	output, err := json.Marshal(e)
+	if err != nil {
+		return e.Error()
+	}
+	return string(output)
 }
 
 type User struct {
@@ -31,7 +34,6 @@ type User struct {
 	PasswordHash    string             `json:"-"`
 	Token           string             `json:"token"`
 	IsAuthenticated bool               `json:"isAuthenticated"`
-	Errors          UserErrors         `json:"errors"`
 	Sections        map[string]Section `json:"sections"`
 	IsMulti         bool               `json:"isMulti"`
 }
@@ -96,19 +98,20 @@ func GetUserByUsername(username string) *User {
 	return nil
 }
 
-func (user *User) Insert() (int, bool) {
+func (user *User) Insert() (int, error) {
+	userErrors := new(UserErrors)
 	emailUser := GetUserByEmail(user.Email)
 	nameUser := GetUserByUsername(user.Username)
 
 	// if user already exists - add errors indication for client
 	if emailUser != nil || nameUser != nil {
 		if nameUser != nil {
-			user.Errors.Username = "A User with this username exists"
+			userErrors.Username = "A User with this username exists"
 		}
 		if emailUser != nil {
-			user.Errors.Email = "A User with this email exists"
+			userErrors.Email = "A User with this email exists"
 		}
-		return 0, false
+		return 0, userErrors
 	}
 
 	// create user in database
@@ -133,7 +136,7 @@ func (user *User) Insert() (int, bool) {
 		panic(err.Error())
 	}
 	//defer insert.Close()
-	return int(id), true
+	return int(id), nil
 }
 
 func (user *User) AddToken(secret string) error {

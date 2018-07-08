@@ -25,25 +25,25 @@ export const loginUserRequestAction = user => ({
   type: types.LOGIN_USER_REQUEST,
   user
 });
-export const loginUserFailedAction = errors => ({
+export const loginUserFailedAction = error => ({
   type: types.LOGIN_USER_FAILURE,
-  errors
+  error
 });
 
 export const logoutUserAction = () => ({
   type: types.LOGOUT_USER
 });
 
-export const setIsMultipleSectionsUserRequestAction = isMulti => ({
-  type: types.SET_MULTIPLE_SECTION_USER_REQUEST,
+export const setIsMultiSectionsRequestAction = isMulti => ({
+  type: types.SET_MULTI_SECTION_REQUEST,
   isMulti
 });
-export const setIsMultipleSectionsUserSuccessAction = isMulti => ({
-  type: types.SET_MULTIPLE_SECTION_USER_SUCCESS,
+export const setIsMultiSectionsSuccessAction = isMulti => ({
+  type: types.SET_MULTI_SECTION_SUCCESS,
   isMulti
 });
-export const setIsMultipleSectionsUserFailedAction = error => ({
-  type: types.SET_MULTIPLE_SECTION_USER_FAILURE,
+export const setIsMultiSectionsFailedAction = error => ({
+  type: types.SET_MULTI_SECTION_FAILURE,
   error
 });
 

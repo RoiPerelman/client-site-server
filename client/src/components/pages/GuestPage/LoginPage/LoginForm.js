@@ -11,12 +11,17 @@ class LoginForm extends React.Component {
       password: ''
     },
     errors: {
-      server: ''
+      email: '',
+      password: '',
+      login: ''
     }
   };
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ ...this.state, errors: nextProps.errors });
+    this.setState({
+      ...this.state,
+      errors: { ...this.state.errors, login: nextProps.loginError }
+    });
   }
 
   onChange = e =>
@@ -45,8 +50,10 @@ class LoginForm extends React.Component {
 
     return (
       <form onSubmit={this.onSubmit}>
-        {errors.server && (
-          <div className="alert alert-danger">{errors.server}</div>
+        {(errors.login || errors.email) && (
+          <div className="alert alert-danger">
+            {errors.login || errors.email}
+          </div>
         )}
         <div className="form-group">
           <label htmlFor="email">Email</label>
@@ -59,7 +66,9 @@ class LoginForm extends React.Component {
             className="form-control"
           />
         </div>
-
+        {errors.password && (
+          <div className="alert alert-danger">{errors.password}</div>
+        )}
         <div className="form-group">
           <label htmlFor="password">Password</label>
           <input
@@ -87,7 +96,7 @@ class LoginForm extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    errors: state.user.errors
+    loginError: state.user.errors.login
   };
 }
 

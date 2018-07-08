@@ -27,12 +27,13 @@ func SignupUser(w http.ResponseWriter, r *http.Request) {
 
 	user.SwitchPasswordToPasswordHash()
 	// insert method implicitly adds errors to user struct
-	if id, success := user.Insert(); success == true {
-		user.Id = id
-		user.AddToken(secret)
-	} else {
-		w.WriteHeader(http.StatusConflict)
+	id, err := user.Insert()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
+	user.Id = id
+	user.AddToken(secret)
 
 	// Marshal the struct to []byte format
 	output, err := json.Marshal(user)
