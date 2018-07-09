@@ -11,6 +11,7 @@ import (
 
 const secret = "secret string"
 
+// todo split into 2 middlewares - one that only checks the jwt token claims and adds them to context "tokenClaims" and another that gets User from db and adds it to context under User.
 func Authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var user models.User
@@ -44,6 +45,7 @@ func Authenticate(next http.Handler) http.Handler {
 					user.Sections = emailUser.Sections
 					user.Username = emailUser.Username
 					user.Email = emailUser.Email
+					user.JSCode = emailUser.JSCode
 				} else {
 					http.Error(w, "user doesnt exists", http.StatusUnauthorized)
 					return

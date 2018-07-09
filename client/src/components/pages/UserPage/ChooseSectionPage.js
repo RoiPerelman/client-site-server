@@ -12,15 +12,16 @@ class ChooseSectionPage extends React.Component {
     this.props.setIsMultipleSectionsUserRequest(!this.props.isMulti);
   }
 
-  onClick = (section, contexts) => {
+  onClick = (section, contexts, jsCode) => {
     this.props.loadDynamicYieldRequestAction({
       section: section,
-      contexts: contexts
+      contexts: contexts,
+      jsCode: jsCode
     });
   };
 
   render() {
-    const { sections, DYRequestError } = this.props;
+    const { sections, DYRequestError, jsCode } = this.props;
 
     return (
       <div>
@@ -34,7 +35,11 @@ class ChooseSectionPage extends React.Component {
               section={sections[idx].sectionId}
               color="primary"
               onClick={() =>
-                this.onClick(sections[idx].sectionId, sections[idx].contexts)
+                this.onClick(
+                  sections[idx].sectionId,
+                  sections[idx].contexts,
+                  jsCode
+                )
               }
             >
               {sections[idx].sectionId}
@@ -49,7 +54,8 @@ class ChooseSectionPage extends React.Component {
 function mapStateToProps(state) {
   return {
     sections: state.user.sections,
-    DYRequestError: state.user.errors.DYRequest
+    DYRequestError: state.user.errors.DYRequest,
+    jsCode: state.user.jsCode
   };
 }
 

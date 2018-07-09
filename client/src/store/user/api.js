@@ -13,5 +13,7 @@ export default {
   addContextItem: contextItem =>
     axios.post('/api/user/addContextItem', contextItem).then(res => res.data),
   delContextItem: contextItem =>
-    axios.post('/api/user/delContextItem', contextItem).then(res => res.data)
+    axios.post('/api/user/delContextItem', contextItem).then(res => res.data),
+  updateJSCode: jsCode =>
+    axios.post('/api/user/updateJSCode', jsCode).then(res => res.data)
 };

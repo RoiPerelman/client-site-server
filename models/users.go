@@ -36,10 +36,11 @@ type User struct {
 	IsAuthenticated bool               `json:"isAuthenticated"`
 	Sections        map[string]Section `json:"sections"`
 	IsMulti         bool               `json:"isMulti"`
+	JSCode          string             `json:"jsCode"`
 }
 
 func GetUserById(id int) *User {
-	userResults, err := db.Query("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection FROM users WHERE id=?", id)
+	userResults, err := db.Query("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection, JSCode FROM users WHERE id=?", id)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -47,7 +48,7 @@ func GetUserById(id int) *User {
 	found := userResults.Next()
 	if found {
 		user := new(User)
-		err = userResults.Scan(&user.Id, &user.Email, &user.Username, &user.PasswordHash, &user.DefaultSection, &user.IsMulti)
+		err = userResults.Scan(&user.Id, &user.Email, &user.Username, &user.PasswordHash, &user.DefaultSection, &user.IsMulti, &user.JSCode)
 		if err != nil {
 			log.Panic(err)
 		}
@@ -59,7 +60,7 @@ func GetUserById(id int) *User {
 }
 
 func GetUserByEmail(email string) *User {
-	userResults, err := db.Query("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection FROM users WHERE email=?", email)
+	userResults, err := db.Query("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection, JSCode FROM users WHERE email=?", email)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -67,7 +68,7 @@ func GetUserByEmail(email string) *User {
 	found := userResults.Next()
 	if found {
 		user := new(User)
-		err = userResults.Scan(&user.Id, &user.Email, &user.Username, &user.PasswordHash, &user.DefaultSection, &user.IsMulti)
+		err = userResults.Scan(&user.Id, &user.Email, &user.Username, &user.PasswordHash, &user.DefaultSection, &user.IsMulti, &user.JSCode)
 		if err != nil {
 			log.Panic(err)
 		}
@@ -79,7 +80,7 @@ func GetUserByEmail(email string) *User {
 }
 
 func GetUserByUsername(username string) *User {
-	userResults, err := db.Query("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection FROM users WHERE username=?", username)
+	userResults, err := db.Query("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection, JSCode FROM users WHERE username=?", username)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -87,7 +88,7 @@ func GetUserByUsername(username string) *User {
 	found := userResults.Next()
 	if found {
 		user := new(User)
-		err = userResults.Scan(&user.Id, &user.Email, &user.Username, &user.PasswordHash, &user.DefaultSection, &user.IsMulti)
+		err = userResults.Scan(&user.Id, &user.Email, &user.Username, &user.PasswordHash, &user.DefaultSection, &user.IsMulti, &user.JSCode)
 		if err != nil {
 			log.Panic(err)
 		}
@@ -96,6 +97,20 @@ func GetUserByUsername(username string) *User {
 	}
 
 	return nil
+}
+
+func UpdateJSCode(id int, jsCode string) {
+	// create user in database
+	insert, err := db.Query(
+		`UPDATE users
+			SET isMultipleSection=?
+			WHERE id=?
+		`, jsCode, id)
+	if err != nil {
+		fmt.Printf("update err %v\n", err.Error())
+		panic(err.Error())
+	}
+	defer insert.Close()
 }
 
 func (user *User) Insert() (int, error) {

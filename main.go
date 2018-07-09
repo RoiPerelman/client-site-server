@@ -2,14 +2,15 @@ package main
 
 import (
 	"flag"
+	"log"
+	"net/http"
+
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"github.com/roiperelman/client-site-server/handlers"
 	"github.com/roiperelman/client-site-server/middlewares"
 	"github.com/roiperelman/client-site-server/models"
 	"github.com/roiperelman/client-site-server/utils"
-	"log"
-	"net/http"
 )
 
 func main() {
@@ -39,6 +40,7 @@ func main() {
 	r.Handle("/api/user/delSection", middlewares.Authenticate(http.HandlerFunc(handlers.DelSectionUser))).Methods("POST")
 	r.Handle("/api/user/addContextItem", middlewares.Authenticate(http.HandlerFunc(handlers.AddContextItem))).Methods("POST")
 	r.Handle("/api/user/delContextItem", middlewares.Authenticate(http.HandlerFunc(handlers.DelContextItem))).Methods("POST")
+	r.Handle("/api/user/updateJSCode", middlewares.Authenticate(http.HandlerFunc(handlers.UpdateJSCode))).Methods("POST")
 	r.PathPrefix("/static").Handler(http.FileServer(http.Dir(staticLocation)))
 	r.PathPrefix("/").HandlerFunc(staticFileHandler(staticLocation + "/index.html"))
 

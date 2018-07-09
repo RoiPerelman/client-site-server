@@ -41,6 +41,7 @@ class DefaultContexts extends React.Component {
     ) : (
       <Fragment>
         <h3>Contexts will be available after activeSection is chosen</h3>
+        <h3>Leave settings to choose section</h3>
         <br />
         <hr />
       </Fragment>

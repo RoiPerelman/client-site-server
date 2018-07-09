@@ -48,7 +48,8 @@ export function* fetchCurrentUserRequestSaga() {
       if (!user.isMulti) {
         yield loadDynamicYieldRequestSaga({
           section: user.defaultSection,
-          contexts: user.sections[user.defaultSection].contexts
+          contexts: user.sections[user.defaultSection].contexts,
+          jsCode: user.jsCode
         });
       }
       yield put(actions.fetchCurrentUserSuccessAction(user));
