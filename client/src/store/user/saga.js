@@ -16,6 +16,7 @@ export function* rootSaga() {
   yield takeEvery('ADD_CONTEXT_ITEM_REQUEST', addContextItemRequestSaga);
   yield takeEvery('DEL_CONTEXT_ITEM_REQUEST', delContextItemRequestSaga);
   yield takeEvery('SET_MULTI_SECTION_REQUEST', setMultiSectionSaga);
+  yield takeEvery('UPDATE_JSCODE_REQUEST', updateJSCodeSaga);
 }
 
 export function* signupUserRequestSaga(action) {
@@ -114,5 +115,14 @@ export function* delContextItemRequestSaga(action) {
     yield put(actions.delContextItemSuccessAction(section));
   } catch (err) {
     yield put(actions.delContextItemFailureAction(err.response.data));
+  }
+}
+
+export function* updateJSCodeSaga(action) {
+  try {
+    yield call(api.updateJSCode, action);
+    yield put(actions.updateJSCodeSuccessAction(action.jsCode));
+  } catch (err) {
+    yield put(actions.updateJSCodeFailureAction(err.response.data));
   }
 }

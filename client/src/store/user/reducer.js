@@ -9,7 +9,8 @@ const clearErrors = {
   isMulti: '',
   section: '',
   DYRequest: '',
-  addContext: ''
+  addContext: '',
+  jsCode: ''
 };
 
 const initialUserState = {
@@ -26,6 +27,7 @@ const initialUserState = {
   token: '',
   isMulti: false,
   sections: {},
+  jsCode: '',
   errors: clearErrors
 };
 
@@ -143,6 +145,20 @@ export const userReducer = (state = initialUserState, action = {}) => {
         errors: {
           ...state.errors,
           addContext: action.error
+        }
+      };
+    case types.UPDATE_JSCODE_SUCCESS: {
+      return {
+        ...state,
+        jsCode: action.jsCode
+      };
+    }
+    case types.UPDATE_JSCODE_FAILURE:
+      return {
+        ...state,
+        errors: {
+          ...state.errors,
+          jsCode: action.error
         }
       };
     default:

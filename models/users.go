@@ -103,7 +103,7 @@ func UpdateJSCode(id int, jsCode string) {
 	// create user in database
 	insert, err := db.Query(
 		`UPDATE users
-			SET isMultipleSection=?
+			SET jsCode=?
 			WHERE id=?
 		`, jsCode, id)
 	if err != nil {

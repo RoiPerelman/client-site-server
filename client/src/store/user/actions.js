@@ -122,3 +122,18 @@ export const delContextItemFailureAction = error => ({
   type: types.DEL_CONTEXT_ITEM_FAILURE,
   error
 });
+
+export const updateJSCodeRequestAction = jsCode => ({
+  type: types.UPDATE_JSCODE_REQUEST,
+  jsCode
+});
+
+export const updateJSCodeSuccessAction = jsCode => ({
+  type: types.UPDATE_JSCODE_SUCCESS,
+  jsCode
+});
+
+export const updateJSCodeFailureAction = error => ({
+  type: types.UPDATE_JSCODE_FAILURE,
+  error
+});
