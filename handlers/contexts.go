@@ -20,12 +20,7 @@ func AddContextItem(w http.ResponseWriter, r *http.Request) {
 
 	models.AddContextTypeItem(context)
 
-	if user := r.Context().Value("User"); user != nil {
-		section = models.GetUserSectionBySectionsId(context.SectionsId)
-	} else {
-		http.Error(w, "authorize user failed", http.StatusInternalServerError)
-		return
-	}
+	section = models.GetUserSectionBySectionsId(context.SectionsId)
 
 	w.Header().Set("content-type", "application/json")
 	enc.Encode(section)
@@ -45,12 +40,7 @@ func DelContextItem(w http.ResponseWriter, r *http.Request) {
 
 	models.DelContextTypeItem(context)
 
-	if user := r.Context().Value("User"); user != nil {
-		section = models.GetUserSectionBySectionsId(context.SectionsId)
-	} else {
-		http.Error(w, "authorize user failed", http.StatusInternalServerError)
-		return
-	}
+	section = models.GetUserSectionBySectionsId(context.SectionsId)
 
 	w.Header().Set("content-type", "application/json")
 	enc.Encode(section)

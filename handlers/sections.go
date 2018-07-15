@@ -17,8 +17,8 @@ func MultipleSectionsUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user := r.Context().Value("User"); user != nil {
-		models.UpdateIsMultipleSectionFeature(user.(models.User).Id, isMulti)
+	if id, ok := r.Context().Value("UserId").(int); ok {
+		models.UpdateIsMultipleSectionFeature(id, isMulti)
 	} else {
 		http.Error(w, "authorize user failed", http.StatusInternalServerError)
 		return
@@ -39,8 +39,8 @@ func AddSectionUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user := r.Context().Value("User"); user != nil {
-		sectionsId := models.AddSection(user.(models.User).Id, section)
+	if id, ok := r.Context().Value("UserId").(int); ok {
+		sectionsId := models.AddSection(id, section)
 		section = models.GetUserSectionBySectionsId(sectionsId)
 	} else {
 		http.Error(w, "authorize user failed", http.StatusInternalServerError)
@@ -62,9 +62,9 @@ func DelSectionUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user := r.Context().Value("User"); user != nil {
-		if section.SectionId != user.(models.User).DefaultSection {
-			models.DelSection(user.(models.User).Id, section)
+	if user, ok := r.Context().Value("User").(models.User); ok {
+		if section.SectionId != user.DefaultSection {
+			models.DelSection(user.Id, section)
 		} else {
 			http.Error(w, "Trying to remove default section!", http.StatusForbidden)
 			return

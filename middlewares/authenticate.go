@@ -9,13 +9,48 @@ import (
 	"strings"
 )
 
+type Claims struct{
+	Id float64
+}
+
 const secret = "secret string"
 
-// todo split into 2 middlewares - one that only checks the jwt token claims and adds them to context "tokenClaims" and another that gets User from db and adds it to context under User.
+// Authenticate should continue where AuthenticateClaims took off
+// should add User of type User context
 func Authenticate(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return AuthenticateClaims(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var user models.User
 
+		if id, ok := r.Context().Value("UserId").(int); ok {
+			user.Id = id
+			// check if user exists in db
+			emailUser := models.GetUserById(user.Id)
+			if emailUser != nil {
+				user.IsAuthenticated = true
+				user.Id = emailUser.Id
+				user.IsMulti = emailUser.IsMulti
+				user.DefaultSection = emailUser.DefaultSection
+				user.Sections = emailUser.Sections
+				user.Username = emailUser.Username
+				user.Email = emailUser.Email
+				user.JSCode = emailUser.JSCode
+			} else {
+				http.Error(w, "user doesnt exists", http.StatusUnauthorized)
+				return
+			}
+		} else {
+			http.Error(w, "authorization failed", http.StatusInternalServerError)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), "User", user)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	}))
+}
+
+// AuthenticateClaims should parse jwt, get claims and adds a UserId of type int context
+func AuthenticateClaims(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		auth := strings.SplitN(r.Header.Get("Authorization"), " ", 2)
 		if len(auth) != 2 || auth[0] != "Bearer" {
 			http.Error(w, "authorization failed", http.StatusUnauthorized)
@@ -32,31 +67,14 @@ func Authenticate(next http.Handler) http.Handler {
 		if err != nil {
 			http.Error(w, "authorization failed", http.StatusUnauthorized)
 			return
-		} else {
-			if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-				user.Id = int(claims["id"].(float64))
-				// check if user exists in db
-				emailUser := models.GetUserById(user.Id)
-				if emailUser != nil {
-					user.IsAuthenticated = true
-					user.Id = emailUser.Id
-					user.IsMulti = emailUser.IsMulti
-					user.DefaultSection = emailUser.DefaultSection
-					user.Sections = emailUser.Sections
-					user.Username = emailUser.Username
-					user.Email = emailUser.Email
-					user.JSCode = emailUser.JSCode
-				} else {
-					http.Error(w, "user doesnt exists", http.StatusUnauthorized)
-					return
-				}
-			} else {
-				http.Error(w, "user doesnt exists", http.StatusUnauthorized)
-				return
-			}
 		}
-
-		ctx := context.WithValue(r.Context(), "User", user)
-		next.ServeHTTP(w, r.WithContext(ctx))
+		fmt.Println(token.Claims.(jwt.MapClaims));
+		if id, ok := token.Claims.(jwt.MapClaims)["id"].(float64); ok && token.Valid {
+			ctx := context.WithValue(r.Context(), "UserId", int(id))
+			next.ServeHTTP(w, r.WithContext(ctx))
+		} else {
+			http.Error(w, "user doesnt exists", http.StatusUnauthorized)
+			return
+		}
 	})
 }

@@ -7,6 +7,7 @@ import (
 	"log"
 	"time"
 	"encoding/json"
+	"database/sql"
 )
 
 type UserErrors struct {
@@ -39,27 +40,21 @@ type User struct {
 	JSCode          string             `json:"jsCode"`
 }
 
-func GetUserById(id int) *User {
-	userResults, err := db.Query("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection, JSCode FROM users WHERE id=?", id)
+func (db *DB) GetUserById(id int) *User {
+	user := new(User)
+	err := db.QueryRow("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection, JSCode FROM users WHERE id=?", id).
+		Scan(&user.Id, &user.Email, &user.Username, &user.PasswordHash, &user.DefaultSection, &user.IsMulti, &user.JSCode)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+		}
 		log.Panic(err)
 	}
-	defer userResults.Close()
-	found := userResults.Next()
-	if found {
-		user := new(User)
-		err = userResults.Scan(&user.Id, &user.Email, &user.Username, &user.PasswordHash, &user.DefaultSection, &user.IsMulti, &user.JSCode)
-		if err != nil {
-			log.Panic(err)
-		}
-		user.Sections = GetAllUserIdSections(user.Id)
-		return user
-	}
-
-	return nil
+	user.Sections = GetAllUserIdSections(user.Id)
+	return user
 }
 
-func GetUserByEmail(email string) *User {
+func (db *DB) GetUserByEmail(email string) *User {
 	userResults, err := db.Query("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection, JSCode FROM users WHERE email=?", email)
 	if err != nil {
 		log.Panic(err)
@@ -79,7 +74,7 @@ func GetUserByEmail(email string) *User {
 	return nil
 }
 
-func GetUserByUsername(username string) *User {
+func (db *DB) GetUserByUsername(username string) *User {
 	userResults, err := db.Query("SELECT id, email, username, passwordHash, DefaultSection, isMultipleSection, JSCode FROM users WHERE username=?", username)
 	if err != nil {
 		log.Panic(err)
@@ -99,24 +94,18 @@ func GetUserByUsername(username string) *User {
 	return nil
 }
 
-func UpdateJSCode(id int, jsCode string) {
-	// create user in database
-	insert, err := db.Query(
-		`UPDATE users
-			SET jsCode=?
-			WHERE id=?
-		`, jsCode, id)
+func (db *DB) UpdateJSCode(id int, jsCode string) error {
+	_, err := db.Exec(`UPDATE users SET jsCode=? WHERE id=?`, jsCode, id)
 	if err != nil {
-		fmt.Printf("update err %v\n", err.Error())
-		panic(err.Error())
+		return err
 	}
-	defer insert.Close()
+	return nil
 }
 
-func (user *User) Insert() (int, error) {
+func (db *DB) InsertUser(user *User) (int, error) {
 	userErrors := new(UserErrors)
-	emailUser := GetUserByEmail(user.Email)
-	nameUser := GetUserByUsername(user.Username)
+	emailUser := db.GetUserByEmail(user.Email)
+	nameUser := db.GetUserByUsername(user.Username)
 
 	// if user already exists - add errors indication for client
 	if emailUser != nil || nameUser != nil {
@@ -150,7 +139,6 @@ func (user *User) Insert() (int, error) {
 		fmt.Printf("insert err %v\n", err.Error())
 		panic(err.Error())
 	}
-	//defer insert.Close()
 	return int(id), nil
 }
 

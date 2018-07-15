@@ -19,8 +19,12 @@ func UpdateJSCode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user := r.Context().Value("User"); user != nil {
-		models.UpdateJSCode(user.(models.User).Id, payload.JsCode)
+	if id, ok := r.Context().Value("UserId").(int); ok {
+		err = models.UpdateJSCode(id, payload.JsCode)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	} else {
 		http.Error(w, "update JS code failed", http.StatusInternalServerError)
 		return

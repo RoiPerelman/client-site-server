@@ -5,12 +5,21 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/roiperelman/client-site-server/utils"
-	"log"
 )
 
-var db *sql.DB
+// DatabaseStore is a DB abstraction that hold all db methods
+type DatabaseStore interface {
+	GetUserById(int) *User
+	GetUserByEmail(string) *User
+	GetUserByUsername(string) *User
+	UpdateJSCode() error
+}
 
-func InitDB() {
+type DB struct {
+	*sql.DB
+}
+
+func InitDB() (*DB, error){
 	var err error
 
 	address := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v",
@@ -20,14 +29,15 @@ func InitDB() {
 		utils.GetEnv("MYSQL_PORT", "3306"),
 		utils.GetEnv("MYSQL_DATABASE", "dyrp_dev"))
 
-	db, err = sql.Open("mysql", address)
+	db, err := sql.Open("mysql", address)
 
 	if err != nil {
-		log.Panic(err)
+		return nil, err
 	}
 
 	err = db.Ping()
 	if err != nil {
-		log.Panic(err)
+		return nil, err
 	}
+	return &DB{db}, nil
 }
