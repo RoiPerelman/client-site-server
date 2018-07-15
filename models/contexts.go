@@ -19,7 +19,7 @@ type ContextItem struct {
 	Item        string `json:"item"`
 }
 
-func GetContextsBySectionsId(sectionsIdentifier int) Contexts {
+func (db *DB) GetContextsBySectionsId(sectionsIdentifier int) Contexts {
 	contexts := new(Contexts)
 	contexts.ProductContext = make([]string, 0)
 	contexts.CartContext = make([]string, 0)
@@ -51,7 +51,7 @@ func GetContextsBySectionsId(sectionsIdentifier int) Contexts {
 	return *contexts
 }
 
-func AddContextTypeItem(contextItem *ContextItem) {
+func (db *DB) AddContextTypeItem(contextItem *ContextItem) {
 	query := fmt.Sprintf(
 		`INSERT INTO contexts (sectionsId, type, item) VALUES ('%v', '%v', '%v')`,
 		contextItem.SectionsId, contextItem.ContextType, contextItem.Item)
@@ -62,7 +62,7 @@ func AddContextTypeItem(contextItem *ContextItem) {
 	}
 }
 
-func DelContextTypeItem(contextItem *ContextItem) {
+func (db *DB) DelContextTypeItem(contextItem *ContextItem) {
 	query := fmt.Sprintf(
 		`DELETE FROM contexts WHERE sectionsId=%v AND type='%v' And item='%v'`,
 		contextItem.SectionsId, contextItem.ContextType, contextItem.Item)

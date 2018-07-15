@@ -50,7 +50,7 @@ func (db *DB) GetUserById(id int) *User {
 		}
 		log.Panic(err)
 	}
-	user.Sections = GetAllUserIdSections(user.Id)
+	user.Sections = db.GetAllUserIdSections(user.Id)
 	return user
 }
 
@@ -67,7 +67,7 @@ func (db *DB) GetUserByEmail(email string) *User {
 		if err != nil {
 			log.Panic(err)
 		}
-		user.Sections = GetAllUserIdSections(user.Id)
+		user.Sections = db.GetAllUserIdSections(user.Id)
 		return user
 	}
 
@@ -87,7 +87,7 @@ func (db *DB) GetUserByUsername(username string) *User {
 		if err != nil {
 			log.Panic(err)
 		}
-		user.Sections = GetAllUserIdSections(user.Id)
+		user.Sections = db.GetAllUserIdSections(user.Id)
 		return user
 	}
 

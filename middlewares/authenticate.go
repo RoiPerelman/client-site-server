@@ -15,41 +15,46 @@ type Claims struct{
 
 const secret = "secret string"
 
-// Authenticate should continue where AuthenticateClaims took off
+// AuthenticateDBUserMiddleware should continue where AuthenticateClaimsMiddleware took off
 // should add User of type User context
-func Authenticate(next http.Handler) http.Handler {
-	return AuthenticateClaims(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var user models.User
+func AuthenticateDBUserMiddleware(next http.Handler) http.Handler {
+	return AuthenticateClaimsMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if dbStore, ok := r.Context().Value("DBStore").(models.DBStore); ok {
+			var user models.User
 
-		if id, ok := r.Context().Value("UserId").(int); ok {
-			user.Id = id
-			// check if user exists in db
-			emailUser := models.GetUserById(user.Id)
-			if emailUser != nil {
-				user.IsAuthenticated = true
-				user.Id = emailUser.Id
-				user.IsMulti = emailUser.IsMulti
-				user.DefaultSection = emailUser.DefaultSection
-				user.Sections = emailUser.Sections
-				user.Username = emailUser.Username
-				user.Email = emailUser.Email
-				user.JSCode = emailUser.JSCode
+			if id, ok := r.Context().Value("UserId").(int); ok {
+				user.Id = id
+				// check if user exists in db
+				emailUser := dbStore.GetUserById(user.Id)
+				if emailUser != nil {
+					user.IsAuthenticated = true
+					user.Id = emailUser.Id
+					user.IsMulti = emailUser.IsMulti
+					user.DefaultSection = emailUser.DefaultSection
+					user.Sections = emailUser.Sections
+					user.Username = emailUser.Username
+					user.Email = emailUser.Email
+					user.JSCode = emailUser.JSCode
+				} else {
+					http.Error(w, "user doesnt exists", http.StatusUnauthorized)
+					return
+				}
 			} else {
-				http.Error(w, "user doesnt exists", http.StatusUnauthorized)
+				http.Error(w, "authorization failed", http.StatusInternalServerError)
 				return
 			}
+
+			ctx := context.WithValue(r.Context(), "User", user)
+			next.ServeHTTP(w, r.WithContext(ctx))
 		} else {
-			http.Error(w, "authorization failed", http.StatusInternalServerError)
+			http.Error(w, "internal DB problem", http.StatusInternalServerError)
 			return
 		}
-
-		ctx := context.WithValue(r.Context(), "User", user)
-		next.ServeHTTP(w, r.WithContext(ctx))
 	}))
 }
 
-// AuthenticateClaims should parse jwt, get claims and adds a UserId of type int context
-func AuthenticateClaims(next http.Handler) http.Handler {
+// AuthenticateClaimsMiddleware should parse jwt, get claims and adds a UserId of type int context
+func AuthenticateClaimsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		auth := strings.SplitN(r.Header.Get("Authorization"), " ", 2)
 		if len(auth) != 2 || auth[0] != "Bearer" {

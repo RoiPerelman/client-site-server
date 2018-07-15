@@ -12,7 +12,7 @@ type Section struct {
 	Contexts  Contexts `json:"contexts"`
 }
 
-func GetAllUserIdSections(userId int) map[string]Section {
+func (db *DB) GetAllUserIdSections(userId int) map[string]Section {
 	sections := make(map[string]Section, 0)
 	sectionResults, err := db.Query("Select id, sectionId FROM sections WHERE sections.userId=?", userId)
 	if err != nil {
@@ -26,14 +26,14 @@ func GetAllUserIdSections(userId int) map[string]Section {
 		if err != nil {
 			log.Fatal(err)
 		}
-		section.Contexts = GetContextsBySectionsId(section.Id)
+		section.Contexts = db.GetContextsBySectionsId(section.Id)
 
 		sections[section.SectionId] = *section
 	}
 	return sections
 }
 
-func GetUserSectionBySectionsId(sectionsId int) Section {
+func (db *DB) GetUserSectionBySectionsId(sectionsId int) Section {
 	section := new(Section)
 	sectionResult, err := db.Query("Select id, sectionId FROM sections WHERE sections.id=?", sectionsId)
 	if err != nil {
@@ -46,12 +46,12 @@ func GetUserSectionBySectionsId(sectionsId int) Section {
 		if err != nil {
 			log.Fatal(err)
 		}
-		section.Contexts = GetContextsBySectionsId(section.Id)
+		section.Contexts = db.GetContextsBySectionsId(section.Id)
 	}
 	return *section
 }
 
-func AddSection(userId int, section Section) int {
+func (db *DB) AddSection(userId int, section Section) int {
 	// create user in database
 	insert, err := db.Exec(
 		`INSERT INTO sections (userId, sectionId)
@@ -68,7 +68,7 @@ func AddSection(userId int, section Section) int {
 	return int(id)
 }
 
-func DelSection(id int, section Section) {
+func (db *DB) DelSection(id int, section Section) {
 	// create user in database
 	_, err := db.Exec(
 		`DELETE FROM sections WHERE userId=? AND sectionId=?`, id, section.SectionId)
@@ -78,7 +78,7 @@ func DelSection(id int, section Section) {
 	}
 }
 
-func UpdateIsMultipleSectionFeature(id int, isMulti bool) {
+func (db *DB) UpdateIsMultipleSectionFeature(id int, isMulti bool) {
 	// create user in database
 	insert, err := db.Query(
 		`UPDATE users

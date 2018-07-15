@@ -7,73 +7,90 @@ import (
 )
 
 func MultipleSectionsUser(w http.ResponseWriter, r *http.Request) {
-	var isMulti bool
+	if dbStore, ok := r.Context().Value("DBStore").(models.DBStore); ok {
+		var isMulti bool
 
-	dec := json.NewDecoder(r.Body)
-	enc := json.NewEncoder(w)
-	err := dec.Decode(&isMulti)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+		dec := json.NewDecoder(r.Body)
+		enc := json.NewEncoder(w)
+		err := dec.Decode(&isMulti)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-	if id, ok := r.Context().Value("UserId").(int); ok {
-		models.UpdateIsMultipleSectionFeature(id, isMulti)
+		if id, ok := r.Context().Value("UserId").(int); ok {
+			dbStore.UpdateIsMultipleSectionFeature(id, isMulti)
+		} else {
+			http.Error(w, "authorize user failed", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("content-type", "application/json")
+		enc.Encode(isMulti)
 	} else {
-		http.Error(w, "authorize user failed", http.StatusInternalServerError)
+		http.Error(w, "db connection failed", http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("content-type", "application/json")
-	enc.Encode(isMulti)
 }
 
 func AddSectionUser(w http.ResponseWriter, r *http.Request) {
-	var section models.Section
+	if dbStore, ok := r.Context().Value("DBStore").(models.DBStore); ok {
+		var section models.Section
 
-	dec := json.NewDecoder(r.Body)
-	enc := json.NewEncoder(w)
-	err := dec.Decode(&section)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+		dec := json.NewDecoder(r.Body)
+		enc := json.NewEncoder(w)
+		err := dec.Decode(&section)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-	if id, ok := r.Context().Value("UserId").(int); ok {
-		sectionsId := models.AddSection(id, section)
-		section = models.GetUserSectionBySectionsId(sectionsId)
+		if id, ok := r.Context().Value("UserId").(int); ok {
+			sectionsId := dbStore.AddSection(id, section)
+			section = dbStore.GetUserSectionBySectionsId(sectionsId)
+		} else {
+			http.Error(w, "authorize user failed", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("content-type", "application/json")
+		enc.Encode(section)
 	} else {
-		http.Error(w, "authorize user failed", http.StatusInternalServerError)
+		http.Error(w, "db connection failed", http.StatusInternalServerError)
 		return
 	}
-
-	w.Header().Set("content-type", "application/json")
-	enc.Encode(section)
 }
 
 func DelSectionUser(w http.ResponseWriter, r *http.Request) {
-	var section models.Section
+	if dbStore, ok := r.Context().Value("DBStore").(models.DBStore); ok {
+		var section models.Section
 
-	dec := json.NewDecoder(r.Body)
-	enc := json.NewEncoder(w)
-	err := dec.Decode(&section)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if user, ok := r.Context().Value("User").(models.User); ok {
-		if section.SectionId != user.DefaultSection {
-			models.DelSection(user.Id, section)
-		} else {
-			http.Error(w, "Trying to remove default section!", http.StatusForbidden)
+		dec := json.NewDecoder(r.Body)
+		enc := json.NewEncoder(w)
+		err := dec.Decode(&section)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
+		if user, ok := r.Context().Value("User").(models.User); ok {
+			if section.SectionId != user.DefaultSection {
+				dbStore.DelSection(user.Id, section)
+			} else {
+				http.Error(w, "Trying to remove default section!", http.StatusForbidden)
+				return
+			}
+		} else {
+			http.Error(w, "authorize user failed", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("content-type", "application/json")
+		enc.Encode(section)
 	} else {
-		http.Error(w, "authorize user failed", http.StatusInternalServerError)
+		http.Error(w, "db connection failed", http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("content-type", "application/json")
-	enc.Encode(section)
 }
