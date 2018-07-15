@@ -7,7 +7,7 @@ import (
 )
 
 func UpdateJSCode(w http.ResponseWriter, r *http.Request) {
-	if dbStore, ok := r.Context().Value("DBStore").(*models.DBStore); ok {
+	if dbStore, ok := r.Context().Value("DBStore").(models.DBUserJSStore); ok {
 		var payload struct{
 			JsCode string `json:"jsCode"`
 		}

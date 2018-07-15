@@ -5,12 +5,11 @@ import (
 	"github.com/roiperelman/client-site-server/models"
 	"io/ioutil"
 	"net/http"
+	"github.com/roiperelman/client-site-server/middlewares"
 )
 
-const secret = "secret string"
-
 func SignupUser(w http.ResponseWriter, r *http.Request) {
-	if dbStore, ok := r.Context().Value("DBStore").(*models.DBStore); ok {
+	if dbStore, ok := r.Context().Value("DBStore").(models.DatabaseStore); ok {
 		// create a struct to hold data
 		var user models.User
 		// Read body to []byte
@@ -34,7 +33,7 @@ func SignupUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		user.Id = id
-		user.AddToken(secret)
+		user.AddToken(middlewares.Secret)
 
 		// Marshal the struct to []byte format
 		output, err := json.Marshal(user)

@@ -4,7 +4,6 @@ import (
 	"flag"
 	"log"
 	"net/http"
-
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"github.com/roiperelman/client-site-server/handlers"
@@ -32,12 +31,10 @@ func main() {
 		log.Panicf("Error Connecting to DB: %v", err)
 	}
 
-	dbStore := &models.DBStore{db}
+	dbStore := &middlewares.DBStore{db}
 
 	r := mux.NewRouter()
 
-
-	//r.HandleFunc("/api/user/authorize", handlers.AuthorizeUser).Methods("GET")
 	r.HandleFunc("/api/user/signup", handlers.SignupUser).Methods("POST")
 	r.HandleFunc("/api/user/login", handlers.LoginUser).Methods("POST")
 	r.Handle("/api/user/authorize", middlewares.AuthenticateDBUserMiddleware(http.HandlerFunc(handlers.AuthorizeUser))).Methods("GET")

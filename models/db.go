@@ -3,34 +3,39 @@ package models
 import (
 	"database/sql"
 	"fmt"
-	"context"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/roiperelman/client-site-server/utils"
-	"net/http"
 )
 
-// DatabaseStore is a DB abstraction that hold all db methods
-type DatabaseStore interface {
-	// users
+type DBUserJSStore interface {
+	UpdateJSCode(id int, jsCode string) error
+}
+type DBUserStore interface {
 	InsertUser(user *User) (int, error)
 	GetUserById(id int) *User
 	GetUserByEmail(email string) *User
 	GetUserByUsername(username string) *User
-	UpdateJSCode(id int, jsCode string) error
-	// sections
+	DBUserJSStore
+}
+
+type DBSectionStore interface {
 	GetAllUserIdSections(userId int) map[string]Section
 	GetUserSectionBySectionsId(sectionsId int) Section
 	AddSection(userId int, section Section) int
 	DelSection(id int, section Section)
 	UpdateIsMultipleSectionFeature(id int, isMulti bool)
-	// contexts
+}
+
+type DBContextStore interface {
 	GetContextsBySectionsId(sectionsIdentifier int) Contexts
 	AddContextTypeItem(contextItem *ContextItem)
 	DelContextTypeItem(contextItem *ContextItem)
 }
-
-type DBStore struct {
-	DatabaseStore
+// DatabaseStore is a DB abstraction that hold all db methods
+type DatabaseStore interface {
+	DBUserStore
+	DBSectionStore
+	DBContextStore
 }
 
 type DB struct {
@@ -58,11 +63,4 @@ func InitDB() (*DB, error){
 	}
 
 	return &DB{db}, nil
-}
-
-func (dbStore *DBStore) DBStoreMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := context.WithValue(r.Context(), "DBStore", dbStore)
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
 }

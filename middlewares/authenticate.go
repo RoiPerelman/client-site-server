@@ -13,13 +13,13 @@ type Claims struct{
 	Id float64
 }
 
-const secret = "secret string"
+const Secret = "secret string"
 
 // AuthenticateDBUserMiddleware should continue where AuthenticateClaimsMiddleware took off
 // should add User of type User context
 func AuthenticateDBUserMiddleware(next http.Handler) http.Handler {
 	return AuthenticateClaimsMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if dbStore, ok := r.Context().Value("DBStore").(*models.DBStore); ok {
+		if dbStore, ok := r.Context().Value("DBStore").(models.DatabaseStore); ok {
 			var user models.User
 
 			if id, ok := r.Context().Value("UserId").(int); ok {
@@ -67,7 +67,7 @@ func AuthenticateClaimsMiddleware(next http.Handler) http.Handler {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
-			return []byte(secret), nil
+			return []byte(Secret), nil
 		})
 		if err != nil {
 			http.Error(w, "authorization failed", http.StatusUnauthorized)

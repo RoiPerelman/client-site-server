@@ -7,7 +7,7 @@ import (
 )
 
 func AddContextItem(w http.ResponseWriter, r *http.Request) {
-	if dbStore, ok := r.Context().Value("DBStore").(*models.DBStore); ok {
+	if dbStore, ok := r.Context().Value("DBStore").(models.DatabaseStore); ok {
 		context := new(models.ContextItem)
 		var section models.Section
 
@@ -32,7 +32,7 @@ func AddContextItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func DelContextItem(w http.ResponseWriter, r *http.Request) {
-	if dbStore, ok := r.Context().Value("DBStore").(*models.DBStore); ok {
+	if dbStore, ok := r.Context().Value("DBStore").(models.DatabaseStore); ok {
 		context := new(models.ContextItem)
 		var section models.Section
 

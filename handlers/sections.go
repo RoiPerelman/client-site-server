@@ -7,7 +7,7 @@ import (
 )
 
 func MultipleSectionsUser(w http.ResponseWriter, r *http.Request) {
-	if dbStore, ok := r.Context().Value("DBStore").(*models.DBStore); ok {
+	if dbStore, ok := r.Context().Value("DBStore").(models.DatabaseStore); ok {
 		var isMulti bool
 
 		dec := json.NewDecoder(r.Body)
@@ -35,7 +35,7 @@ func MultipleSectionsUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddSectionUser(w http.ResponseWriter, r *http.Request) {
-	if dbStore, ok := r.Context().Value("DBStore").(*models.DBStore); ok {
+	if dbStore, ok := r.Context().Value("DBStore").(models.DatabaseStore); ok {
 		var section models.Section
 
 		dec := json.NewDecoder(r.Body)
@@ -63,7 +63,7 @@ func AddSectionUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func DelSectionUser(w http.ResponseWriter, r *http.Request) {
-	if dbStore, ok := r.Context().Value("DBStore").(*models.DBStore); ok {
+	if dbStore, ok := r.Context().Value("DBStore").(models.DatabaseStore); ok {
 		var section models.Section
 
 		dec := json.NewDecoder(r.Body)

@@ -5,10 +5,11 @@ import (
 	"github.com/roiperelman/client-site-server/models"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
+	"github.com/roiperelman/client-site-server/middlewares"
 )
 
 func LoginUser(w http.ResponseWriter, r *http.Request) {
-	if dbStore, ok := r.Context().Value("DBStore").(*models.DBStore); ok {
+	if dbStore, ok := r.Context().Value("DBStore").(models.DatabaseStore); ok {
 		var user models.User // create a struct to hold data
 
 		// create a request.body decoder
@@ -30,7 +31,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "Error: Invalid Email/password combination!", http.StatusUnauthorized)
 				return
 			} else {
-				dbUser.AddToken(secret)
+				dbUser.AddToken(middlewares.Secret)
 				dbUser.IsAuthenticated = true
 			}
 		} else {
