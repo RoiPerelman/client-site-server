@@ -36,7 +36,6 @@ func main() {
 
 	r := mux.NewRouter()
 
-	r.Use(dbStore.DBStoreMiddleware)
 
 	//r.HandleFunc("/api/user/authorize", handlers.AuthorizeUser).Methods("GET")
 	r.HandleFunc("/api/user/signup", handlers.SignupUser).Methods("POST")
@@ -51,7 +50,7 @@ func main() {
 	r.PathPrefix("/static").Handler(http.FileServer(http.Dir(staticLocation)))
 	r.PathPrefix("/").HandlerFunc(staticFileHandler(staticLocation + "/index.html"))
 
-	http.ListenAndServe(":"+utils.GetEnv("PORT", port), r)
+	http.ListenAndServe(":"+utils.GetEnv("PORT", port), dbStore.DBStoreMiddleware(r))
 }
 
 func staticFileHandler(filePath string) func(w http.ResponseWriter, r *http.Request) {

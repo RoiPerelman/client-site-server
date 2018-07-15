@@ -10,7 +10,7 @@ import (
 const secret = "secret string"
 
 func SignupUser(w http.ResponseWriter, r *http.Request) {
-	if dbStore, ok := r.Context().Value("DBStore").(models.DBStore); ok {
+	if dbStore, ok := r.Context().Value("DBStore").(*models.DBStore); ok {
 		// create a struct to hold data
 		var user models.User
 		// Read body to []byte

@@ -19,7 +19,7 @@ const secret = "secret string"
 // should add User of type User context
 func AuthenticateDBUserMiddleware(next http.Handler) http.Handler {
 	return AuthenticateClaimsMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if dbStore, ok := r.Context().Value("DBStore").(models.DBStore); ok {
+		if dbStore, ok := r.Context().Value("DBStore").(*models.DBStore); ok {
 			var user models.User
 
 			if id, ok := r.Context().Value("UserId").(int); ok {
@@ -73,7 +73,6 @@ func AuthenticateClaimsMiddleware(next http.Handler) http.Handler {
 			http.Error(w, "authorization failed", http.StatusUnauthorized)
 			return
 		}
-		fmt.Println(token.Claims.(jwt.MapClaims));
 		if id, ok := token.Claims.(jwt.MapClaims)["id"].(float64); ok && token.Valid {
 			ctx := context.WithValue(r.Context(), "UserId", int(id))
 			next.ServeHTTP(w, r.WithContext(ctx))

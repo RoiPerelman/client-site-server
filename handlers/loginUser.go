@@ -8,7 +8,7 @@ import (
 )
 
 func LoginUser(w http.ResponseWriter, r *http.Request) {
-	if dbStore, ok := r.Context().Value("DBStore").(models.DBStore); ok {
+	if dbStore, ok := r.Context().Value("DBStore").(*models.DBStore); ok {
 		var user models.User // create a struct to hold data
 
 		// create a request.body decoder
@@ -42,7 +42,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("content-type", "application/json")
 		enc.Encode(dbUser)
 	} else {
-		http.Error(w, "db connection failed", http.StatusInternalServerError)
+		http.Error(w, "internal DB problem", http.StatusInternalServerError)
 		return
 	}
 
