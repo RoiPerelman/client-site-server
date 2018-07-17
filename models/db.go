@@ -10,6 +10,7 @@ import (
 type DBUserJSStore interface {
 	UpdateJSCode(id int, jsCode string) error
 }
+
 type DBUserStore interface {
 	InsertUser(user *User) (int, error)
 	GetUserById(id int) *User

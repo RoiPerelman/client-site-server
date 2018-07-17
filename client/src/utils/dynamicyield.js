@@ -39,7 +39,6 @@ const loadDynamicYield = async ({ section, contexts, jsCode }) => {
       (window.DY.API.actions = window.DY.API.actions || []).push(args);
     }
   };
-  console.log();
   window.DY.recommendationContext = {
     type: getContextType() || 'OTHER',
     data: contexts[getContextType().toLowerCase()] || []

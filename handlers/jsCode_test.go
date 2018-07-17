@@ -13,44 +13,34 @@ import (
 	"testing"
 )
 
-// the following type and function are to be used with testify
-type mockDBUserJSStoreWithTestify struct {
-	mock.Mock
-}
-
-func (m *mockDBUserJSStoreWithTestify) UpdateJSCode(id int, jsCode string) error {
-	args := m.Called(id, jsCode)
-	return args.Error(0)
-}
-
 func TestUpdateJSCode(t *testing.T) {
 	const UserId = "UserId"
 	const DBStore = "DBStore"
 
 	tests := map[string]struct {
-		DBUpdateJSCodeResponse error
-		contexts               []string
-		want                   string
+		UpdateJSCodeResponse error
+		contexts             []string
+		want                 string
 	}{
-		"DBStore returns an error": {
-			DBUpdateJSCodeResponse: errors.New("mockDBStore error"),
-			contexts:               []string{UserId, DBStore},
-			want:                   "mockDBStore error\n",
-		},
-		"UserId doesnt exist in request.context": {
-			DBUpdateJSCodeResponse: nil,
-			contexts:               []string{DBStore},
-			want:                   "update JS code failed\n",
-		},
-		"DBStore doesnt exist in request.context": {
-			DBUpdateJSCodeResponse: nil,
-			contexts:               []string{UserId},
-			want:                   "db connection failed\n",
-		},
 		"Successful run": {
-			DBUpdateJSCodeResponse: nil,
-			contexts:               []string{UserId, DBStore},
-			want:                   "{\"jsCode\":\"console.log('JSCode Test')\"}\n",
+			UpdateJSCodeResponse: nil,
+			contexts:             []string{UserId, DBStore},
+			want:                 "{\"jsCode\":\"console.log('JSCode Test')\"}\n",
+		},
+		"DBStore returns an error": {
+			UpdateJSCodeResponse: errors.New("mockDBStore error"),
+			contexts:             []string{UserId, DBStore},
+			want:                 "mockDBStore error\n",
+		},
+		"UserId doesnt exist in r.context": {
+			UpdateJSCodeResponse: nil,
+			contexts:             []string{DBStore},
+			want:                 "update JS code failed\n",
+		},
+		"DBStore doesnt exist in r.context": {
+			UpdateJSCodeResponse: nil,
+			contexts:             []string{UserId},
+			want:                 "db connection failed\n",
 		},
 	}
 
@@ -67,10 +57,10 @@ func TestUpdateJSCode(t *testing.T) {
 					ctx := context.WithValue(request.Context(), "UserId", userId)
 					request = request.WithContext(ctx)
 				case DBStore:
-					testDBUserJSStore := new(mockDBUserJSStoreWithTestify)
+					testDBUserJSStore := new(mockDatabaseStore)
 					testDBUserJSStore.
 						On("UpdateJSCode", mock.Anything, mock.Anything).
-						Return(test.DBUpdateJSCodeResponse)
+						Return(test.UpdateJSCodeResponse)
 					ctx := context.WithValue(request.Context(), "DBStore", testDBUserJSStore)
 					request = request.WithContext(ctx)
 				}
