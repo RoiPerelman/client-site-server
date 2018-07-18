@@ -4,13 +4,11 @@ import (
 	"encoding/json"
 	"github.com/roiperelman/client-site-server/models"
 	"net/http"
-	"fmt"
 )
 
 func AddContextItem(w http.ResponseWriter, r *http.Request) {
 	dbStore, ok := r.Context().Value("DBStore").(models.DatabaseStore)
 	if !ok {
-		fmt.Println(http.StatusText(http.StatusInternalServerError))
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
